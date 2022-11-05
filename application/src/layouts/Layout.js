@@ -119,7 +119,15 @@ const Layout = ({ children, window }) => {
             }}
           >
             <Toolbar>
-              <Typography variant="h6">JobTracker</Typography>
+              <Typography
+                component={NavLink}
+                to={"/jobs"}
+                variant="h6"
+                noWrap
+                sx={{ color: "white", textDecoration: "none" }}
+              >
+                JobTracker
+              </Typography>
             </Toolbar>
             <Stack
               direction="column"
