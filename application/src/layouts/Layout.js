@@ -6,11 +6,13 @@ import {
   Divider,
   Drawer,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Stack,
+  styled,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -24,6 +26,7 @@ import {
   Settings as SettingsIcon,
   Work as WorkIcon,
 } from "@mui/icons-material"
+import { v4 as uuid } from "uuid"
 
 const drawerWidth = 260
 
@@ -45,17 +48,31 @@ const Layout = ({ children, window }) => {
   const container =
     window !== undefined ? () => window().document.body : undefined
 
-  const navList1 = [
-    { name: "Tööd", target: "/jobs", icon: <ListAltIcon /> },
-    { name: "Arved", target: "/invoices", icon: <ReceiptIcon /> },
+  const MenuListItem = styled(ListItem)({
+    color: "black",
+    [theme.breakpoints.up("md")]: {
+      color: "white",
+    },
+    "&:hover": {
+      textDecoration: "underline",
+    },
+    "&.active": {
+      textDecoration: "underline",
+    },
+  })
+
+  const navList = [
+    [
+      { name: "Tööd", target: "/jobs", icon: <ListAltIcon /> },
+      { name: "Arved", target: "/invoices", icon: <ReceiptIcon /> },
+    ],
+    [
+      { name: "Kliendid", target: "/clients", icon: <GroupIcon /> },
+      { name: "Teenused", target: "/services", icon: <WorkIcon /> },
+    ],
   ]
 
   const navList2 = [
-    { name: "Kliendid", target: "/clients", icon: <GroupIcon /> },
-    { name: "Teenused", target: "/services", icon: <WorkIcon /> },
-  ]
-
-  const navList3 = [
     { name: "Seaded", target: "/settings", icon: <SettingsIcon /> },
   ]
 
@@ -119,7 +136,15 @@ const Layout = ({ children, window }) => {
             }}
           >
             <Toolbar>
-              <Typography variant="h6">JobTracker</Typography>
+              <Typography
+                component={NavLink}
+                to={"/jobs"}
+                variant="h6"
+                noWrap
+                sx={{ color: "white", textDecoration: "none" }}
+              >
+                JobTracker
+              </Typography>
             </Toolbar>
             <Stack
               direction="column"
@@ -127,75 +152,39 @@ const Layout = ({ children, window }) => {
               sx={{ height: "100vh" }}
             >
               <Box>
-                <List onClick={handleDrawerToggle}>
-                  {navList1.map((item, index) => (
-                    <ListItem
-                      key={item.name}
-                      component={NavLink}
-                      to={item.target}
-                      sx={{
-                        color: "black",
-                        [theme.breakpoints.up("md")]: {
-                          color: "white",
-                        },
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          color: "black",
-                          [theme.breakpoints.up("md")]: {
-                            color: "white",
-                          },
-                        }}
-                      >
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText primary={item.name} />
-                    </ListItem>
-                  ))}
-                </List>
-                <Divider />
-
-                <List onClick={handleDrawerToggle}>
-                  {navList2.map((item, index) => (
-                    <ListItem
-                      key={item.name}
-                      component={NavLink}
-                      to={item.target}
-                      sx={{
-                        color: "black",
-                        [theme.breakpoints.up("md")]: {
-                          color: "white",
-                        },
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          color: "black",
-                          [theme.breakpoints.up("md")]: {
-                            color: "white",
-                          },
-                        }}
-                      >
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText primary={item.name} />
-                    </ListItem>
-                  ))}
-                </List>
+                {navList.map((element, index, elements) => (
+                  <Box key={uuid()}>
+                    <List key={uuid()} onClick={handleDrawerToggle}>
+                      {element.map((item) => (
+                        <MenuListItem
+                          key={uuid()}
+                          component={NavLink}
+                          to={item.target}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              color: "black",
+                              [theme.breakpoints.up("md")]: {
+                                color: "white",
+                              },
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText primary={item.name} />
+                        </MenuListItem>
+                      ))}
+                    </List>
+                    {elements[index + 1] && <Divider />}
+                  </Box>
+                ))}
               </Box>
               <List onClick={handleDrawerToggle}>
-                {navList3.map((item, index) => (
-                  <ListItem
+                {navList2.map((item, index) => (
+                  <MenuListItem
                     key={item.name}
                     component={NavLink}
                     to={item.target}
-                    sx={{
-                      color: "black",
-                      [theme.breakpoints.up("md")]: {
-                        color: "white",
-                      },
-                    }}
                   >
                     <ListItemIcon
                       sx={{
@@ -208,19 +197,12 @@ const Layout = ({ children, window }) => {
                       {item.icon}
                     </ListItemIcon>
                     <ListItemText primary={item.name} />
-                  </ListItem>
+                  </MenuListItem>
                 ))}
-                <ListItem
-                  sx={{
-                    color: "black",
-                    [theme.breakpoints.up("md")]: {
-                      color: "white",
-                    },
-                  }}
-                >
+                <MenuListItem>
                   <ListItemIcon />
                   <ListItemText primary="Logi välja" />
-                </ListItem>
+                </MenuListItem>
               </List>
             </Stack>
           </Drawer>
