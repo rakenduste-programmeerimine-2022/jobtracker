@@ -1,1 +1,4 @@
-/application/node_modules
+./application/node_modules
+./application/package.json
+./application/package-lock.json
+./Server/package-lock.
