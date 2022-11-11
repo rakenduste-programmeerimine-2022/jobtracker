@@ -1,11 +1,7 @@
 //import { useRef, useState } from "react"
-import { Grid, FormHelperText, Typography } from "@mui/material"
+import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
-import {
-  InputField,
-  DropDownInput,
-  DatePicker,
-} from "../../components/controls/Input"
+import { InputField } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 
 const initialValues = {
@@ -37,11 +33,15 @@ const ClientForm = () => {
     setErrors({
       ...temp,
     })
-    if (fieldValues == values) return Object.values(temp).every((x) => x == "")
+    if (fieldValues === values)
+      return Object.values(temp).every((x) => x === "")
   }
 
-  const { values, setValues, errors, setErrors, handleInputChange, resetForm } =
-    useForm(initialValues, true, validate)
+  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(
+    initialValues,
+    true,
+    validate
+  )
 
   const handleSubmit = (e) => {
     e.preventDefault()

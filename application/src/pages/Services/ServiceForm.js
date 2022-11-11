@@ -2,7 +2,7 @@ import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
 import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
-import { getTaxRates } from "../../utilities/TaxRates"
+import { getTaxRates } from "../../utilities/LocalRequests"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 

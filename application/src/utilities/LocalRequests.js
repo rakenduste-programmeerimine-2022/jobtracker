@@ -13,7 +13,7 @@ export const getTaxRates = () => [
   },
 ]
 
-export const getTaxRates = () => [
+export const getStatuses = () => [
   {
     id: "active",
     title: "Töös",
