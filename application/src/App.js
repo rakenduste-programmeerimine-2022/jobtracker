@@ -6,7 +6,7 @@ import Jobs from "./pages/jobs/Jobs"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
-import Services from "./pages/services/Services"
+import Services from "./pages/Services/Services"
 import Settings from "./pages/Settings"
 
 function App() {
