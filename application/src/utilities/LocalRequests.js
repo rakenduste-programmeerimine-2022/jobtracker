@@ -12,3 +12,14 @@ export const getTaxRates = () => [
     title: "20%",
   },
 ]
+
+export const getTaxRates = () => [
+  {
+    id: "active",
+    title: "Töös",
+  },
+  {
+    id: "finished",
+    title: "Valmis",
+  },
+]

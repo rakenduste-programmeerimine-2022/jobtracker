@@ -1,44 +1,31 @@
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
-import { InputField, DropDownInput } from "../../components/controls/Input"
+import {
+  InputField,
+  DatePicker,
+  DropDownInput,
+} from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
-import { getTaxRates } from "../../utilities/TaxRates"
+import { getClients, getServices } from "../../utilities/DataBaseRequests"
+import { getStatuses, getTaxRates } from "../../utilities/LocalRequests"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
-/*
-Kasutajaliideses:
-- kasutaja id
-- kood
-- kirjeldus
-- ühiku nimi
-- ühiku hind
-- maksumäär (0, 9, 20)
-
-Serveri poolel:
-const serviceSchema = new Schema(
-  {
-    userId: { type: String, required: true},
-    code: { type: String, required: true, unique: true }, 
-    description: { type: String, required: true },
-    unit: { type: String, required: true },
-    price: { type: Decimal128, required: true },
-    tax: { type: Decimal128, enum: ["0.0", "9.0", 20.0"], default: "20.0" },
-  },
-  { timestamps: true }
-)
-*/
-
 const initialValues = {
-  code: "",
+  user: "",
+  client: "",
+  service: "",
   description: "",
   unit: "",
   price: "",
   tax: "",
+  total: "",
+  dueDate: "",
+  status: "töös",
   // date: Date(),
 }
 
-const Services = () => {
+const JobForm = () => {
   const validate = (fieldValues = values) => {
     let temp = { ...errors }
     if ("code" in fieldValues)
@@ -89,14 +76,31 @@ const Services = () => {
     <Form onSubmit={handleSubmit}>
       <Grid container>
         <Grid item md={12}>
+          <DropDownInput
+            required
+            label="Klient"
+            name="client"
+            value={values.client}
+            error={errors.client}
+            onChange={handleInputChange}
+            options={getClients()}
+          />
+          <DropDownInput
+            required
+            label="Teenus"
+            name="service"
+            value={values.service}
+            error={errors.service}
+            onChange={handleInputChange}
+            options={getServices()}
+          />
           <InputField
             required
-            label="Kood"
-            name="code"
-            value={values.code}
-            error={errors.code}
+            label="Kirjeldus"
+            name="description"
+            value={values.description}
+            error={errors.description}
             onChange={handleInputChange}
-            width="100px"
           />
           <InputField
             required
@@ -124,7 +128,6 @@ const Services = () => {
             onChange={handleInputChange}
             width="120px"
           />
-
           <DropDownInput
             required
             label="KM"
@@ -135,19 +138,36 @@ const Services = () => {
             options={getTaxRates()}
             width="100px"
           />
-
-          {/*           <DatePicker
-            label="Kuupäev"
-            name="date"
-            value={values.date}
+          <InputField
+            required
+            label="Kokku"
+            name="total"
+            value={values.total}
+            error={errors.total}
             onChange={handleInputChange}
-          /> */}
-
-          <Button type="submit" text="Lisa teenus" onClick={handleSubmit} />
+            width="120px"
+          />
+          <DatePicker
+            label="Tähtaeg"
+            name="date"
+            value={values.dueDate}
+            error={errors.dueDate}
+            onChange={handleInputChange}
+          />
+          <DropDownInput
+            required
+            label="Olek"
+            name="status"
+            value={values.status}
+            error={errors.status}
+            onChange={handleInputChange}
+            options={getStatuses()}
+          />
+          <Button type="submit" text="Lisa töö" onClick={handleSubmit} />
         </Grid>
       </Grid>
     </Form>
   )
 }
 
-export default Services
+export default JobForm

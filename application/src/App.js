@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./layouts/Layout"
-import Clients from "./pages/Clients"
-import Invoices from "./pages/Invoices"
-import Jobs from "./pages/Jobs"
+import Clients from "./pages/clients/Clients"
+import Invoices from "./pages/invoices/Invoices"
+import Jobs from "./pages/jobs/Jobs"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
-import Services from "./pages/Services/Services"
+import Services from "./pages/services/Services"
 import Settings from "./pages/Settings"
 
 function App() {

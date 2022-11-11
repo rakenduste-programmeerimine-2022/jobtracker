@@ -1,4 +1,5 @@
-import React from "react"
+import ClientForm from "./ClientForm"
+import { Box, Divider } from "@mui/material"
 
 /*
 Kasutajaliideses:
@@ -25,7 +26,17 @@ const clientSchema = new Schema(
 */
 
 const Clients = () => {
-  return <div>Clients</div>
+  return (
+    <>
+      <Box sx={{ m: 3, p: 3 }}>
+        <ClientForm />
+      </Box>
+
+      <Divider />
+
+      <Box sx={{ m: 3, p: 3 }}>Siia tuleb tabel</Box>
+    </>
+  )
 }
 
 export default Clients
