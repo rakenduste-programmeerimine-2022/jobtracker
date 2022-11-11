@@ -2,7 +2,7 @@ import { Box, Button, Grid, Input, TextField, Typography } from "@mui/material"
 import React, { useRef, useState } from "react"
 import { Link } from "react-router-dom"
 
-const Register = () => {
+const Login = () => {
 
 
   const emailRef = useRef()
@@ -100,4 +100,4 @@ const Register = () => {
   </Box>
 }
 
-export default Register
+export default Login
