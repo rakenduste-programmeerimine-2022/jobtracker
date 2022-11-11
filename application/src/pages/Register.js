@@ -11,7 +11,7 @@ const Register = () => {
   const emailRef = useRef()
   const passwordRef = useRef()
   const passwordCheckRef = useRef()
-  const user = {name: "", surname: "", businessName: "", registerNumber: "", email: "", password: "", passwordConfirm: ""}
+  const user = {name: "", surname: "", businessName: "", regNumber: "", email: "", password: ""}
   const [nameError, setNameError] = useState("")
   const [surnameError, setSurnameError] = useState("")
   const [registerNoError, setSerigisterNoError] = useState("")
@@ -57,13 +57,19 @@ const Register = () => {
       setPasswordMatchError("Salasõna ei kattu salasõna kontrolliga")
     }else{
       console.log("olensiinka")
-      user.passwordConfirm = passwordCheckRef.current.value
       setPasswordMatchError("")
     }
 
     user.businessName = businessNameRef.current.value
-    user.registerNumber = registerNoRef.current.value
+    user.regNumber = registerNoRef.current.value
+
     console.log(user)
+
+
+    if(nameError === "" && surnameError === "" && emailError === "" && passWordError === "" && passwordMatchError === ""){
+      console.log("see käivitub")
+      postSignup()
+    }
   }
 
 
@@ -81,6 +87,21 @@ const Register = () => {
   }
 
 
+
+  async function postSignup(){
+    const json = JSON.stringify(user)
+    console.log(json)
+    const requestOptions = {
+      method: "POST",
+      headers: {"Content-Type": 'application/json'},
+      body: JSON.stringify(user)
+    }
+
+
+    const response = await fetch("http://localhost:8080/auth/signup", requestOptions);
+    const data = await response.json();
+    console.log(data);
+  }
 
 
 
