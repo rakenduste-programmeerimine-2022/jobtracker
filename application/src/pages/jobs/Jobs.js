@@ -1,4 +1,5 @@
-import React from "react"
+import JobForm from "./JobForm"
+import { Box, Divider } from "@mui/material"
 
 /*
 Kasutajaliideses:
@@ -35,7 +36,17 @@ const jobSchema = new Schema(
 */
 
 const Jobs = () => {
-  return <div>Jobs</div>
+  return (
+    <>
+      <Box sx={{ m: 3, p: 3 }}>
+        <JobForm />
+      </Box>
+
+      <Divider />
+
+      <Box sx={{ m: 3, p: 3 }}>Siia tuleb tabel</Box>
+    </>
+  )
 }
 
 export default Jobs
