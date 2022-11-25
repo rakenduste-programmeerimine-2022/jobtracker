@@ -8,23 +8,26 @@ import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
 import Services from "./pages/Services/Services"
 import Settings from "./pages/Settings"
+import PrivateRoutes from "./utilities/PrivateRoutes"
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
         <Routes>
-          <Route path="/" element={<Jobs />} />
-          <Route path="/register" element={<Register />} />
+          <Route element={<PrivateRoutes />}>
+            <Route path="/" element={<Layout />} >
+              <Route index element={<Jobs />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/clients" element={<Clients />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Route>
           <Route path="/login" element={<Login />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
         </Routes>
-      </Layout>
     </BrowserRouter>
   )
 }

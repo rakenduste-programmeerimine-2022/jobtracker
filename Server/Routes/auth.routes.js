@@ -1,14 +1,23 @@
 const verifySignUp  = require("../middlewares");
 const controller = require("../Controllers/auth.controller");
 const { body, validationResult } = require('express-validator')
+const cors = require('cors');
 
 module.exports = async function(app) {
+
+    let corsOptions = {
+        origin: 'http://localhost:3000',
+        credentials: true,    
+    }
     
     await app.use(function(req, res, next){
+        res.header("Access-Control-Allow-Credentials", true);
+        res.header("Access-Control-Allow-Origin", 'http://localhost:3000');
+        res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
         res.header(
-            "Access-Control-Allow-Headers",
-            "origin, Content-Type, Accept"
-        )
+          "Access-Control-Allow-Headers",
+          "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept"
+        );
         next();
     });
 
@@ -27,5 +36,6 @@ module.exports = async function(app) {
 
     }, verifySignUp.verifySignUp, controller.signup)
     app.post("/auth/signin", controller.signin);
-    app.post("/auth/signout", controller.signout);
+    app.get("/auth/signout", controller.signout);
+    app.get("/auth/tokencheck", controller.tokencheck);
 }
