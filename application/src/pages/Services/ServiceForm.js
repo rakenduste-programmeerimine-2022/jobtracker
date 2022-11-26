@@ -1,48 +1,37 @@
+import { useEffect } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
+import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
+import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
+import axios from "../../api/axios"
+import { useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+
+const SERVICE_URL = "/api/services"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
-/*
-Kasutajaliideses:
-- kasutaja id
-- kood
-- kirjeldus
-- ühiku nimi
-- ühiku hind
-- maksumäär (0, 9, 20)
+const ServiceForm = ({ fetchData }) => {
+  const { serviceId } = useParams()
 
-Serveri poolel:
-const serviceSchema = new Schema(
-  {
-    userId: { type: String, required: true},
-    code: { type: String, required: true, unique: true }, 
-    description: { type: String, required: true },
-    unit: { type: String, required: true },
-    price: { type: Decimal128, required: true },
-    tax: { type: Decimal128, enum: ["0.0", "9.0", 20.0"], default: "20.0" },
-  },
-  { timestamps: true }
-)
-*/
+  const initialValues = {
+    userId: "algne", //siia tuleb see tekitada
+    code: "",
+    description: "",
+    unit: "",
+    price: "",
+    tax: "",
+  }
 
-const initialValues = {
-  code: "",
-  description: "",
-  unit: "",
-  price: "",
-  tax: "",
-  // date: Date(),
-}
+  const navigate = useNavigate()
 
-const Services = () => {
   const validate = (fieldValues = values) => {
     let temp = { ...errors }
     if ("code" in fieldValues)
-      temp.code = /^[0-9]{3,10}$/.test(fieldValues.code)
+      temp.code = /^[0-9]{1,10}$/.test(fieldValues.code)
         ? ""
         : "Koodis saab olla 3-10 numbrit."
     if ("description" in fieldValues)
@@ -69,21 +58,133 @@ const Services = () => {
       return Object.values(temp).every((x) => x === "")
   }
 
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(
-    initialValues,
-    true,
-    validate
-  )
+  const { values, errors, setValues, setErrors, handleInputChange, resetForm } =
+    useForm(initialValues, true, validate)
+
+  const fetchDataCall = async ({ api }) => {
+    let apiReturn = await axios
+      .get(api)
+      .then((response) => response.data)
+      .catch(function (error) {
+        console.log(error)
+      })
+    return apiReturn
+  }
+
+  useEffect(() => {
+    if (serviceId !== undefined) {
+      const id = serviceId
+      const api = SERVICE_URL + "/" + id
+      console.log(id)
+      const fetchItem = async (api) => {
+        let response = await fetchDataCall({ api: api })
+        const { userId, code, description, unit, price, tax } = response
+        const dbValues = {
+          userId,
+          code,
+          description,
+          unit,
+          price: price.$numberDecimal,
+          tax: tax.$numberDecimal,
+        }
+
+        setValues(dbValues)
+      }
+      fetchItem(api)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
     if (validate()) {
       console.log(values)
-      window.alert("Esitatud")
-      resetForm()
+      handleAddService(values)
     }
   }
+
+  const handleAddService = async (newService) => {
+    try {
+      await axios.post(SERVICE_URL, newService)
+      resetForm()
+      fetchData()
+      //õnnestumise teade
+      setSnackbarMessage("Muutmine õnnestus!")
+      showSnackbar()
+    } catch (err) {
+      // Handle Error Here
+      console.error(err)
+      let temp = { ...errors }
+
+      if (err.response.status === 499) {
+        temp.code = "See kood on juba võetud."
+      }
+      setErrors({
+        ...temp,
+      })
+    }
+  }
+
+  const handleEdit = (e) => {
+    e.preventDefault()
+
+    if (validate()) {
+      console.log(values)
+      handleEditService(values)
+    }
+  }
+
+  const handleEditService = async (updatedService) => {
+    try {
+      const UPDATE_URL = SERVICE_URL + "/" + serviceId
+      const response = await axios.put(UPDATE_URL, updatedService)
+      //õnnestumise teade
+      setSnackbarMessage("Muutmine õnnestus!")
+      showSnackbar()
+      console.log(response.data)
+    } catch (err) {
+      // Handle Error Here
+      console.error(err)
+      let temp = { ...errors }
+
+      if (err.response.status === 499) {
+        temp.code = "See kood on juba võetud."
+        console.log("499")
+      }
+      setErrors({
+        ...temp,
+      })
+    }
+  }
+
+  const handleDelete = (e) => {
+    e.preventDefault()
+    //kontrollida, kas on kasutuses
+    //kinnitus lisada
+    handleDeleteService()
+    navigate("/services")
+  }
+
+  const handleDeleteService = async () => {
+    try {
+      const DELETE_URL = SERVICE_URL + "/" + serviceId
+      const response = await axios.delete(DELETE_URL)
+      console.log(response.data)
+    } catch (err) {
+      // Handle Error Here
+      console.error(err)
+    }
+  }
+
+  const { dialogOpen, handleDialogOpen, handleDialogClose } = useAlertDialog()
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -135,19 +236,30 @@ const Services = () => {
             options={getTaxRates()}
             width="100px"
           />
-
-          {/*           <DatePicker
-            label="Kuupäev"
-            name="date"
-            value={values.date}
-            onChange={handleInputChange}
-          /> */}
-
-          <Button type="submit" text="Lisa teenus" onClick={handleSubmit} />
+          {serviceId !== undefined ? (
+            <>
+              <Button type="edit" text="Muuda" onClick={handleEdit} />
+              <Button text="kustuta" onClick={handleDialogOpen} />
+              <Snackbar
+                open={snackbarOpen}
+                onClose={hideSnackbar}
+                text={snackbarMessage}
+              />
+              <AlertDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+                title="Kustuta teenus"
+                content="Oled kindel, et soovid teenuse kustutada"
+                onDelete={handleDelete}
+              />
+            </>
+          ) : (
+            <Button type="submit" text="Lisa" onClick={handleSubmit} />
+          )}
         </Grid>
       </Grid>
     </Form>
   )
 }
 
-export default Services
+export default ServiceForm

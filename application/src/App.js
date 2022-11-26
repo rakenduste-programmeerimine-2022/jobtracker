@@ -6,7 +6,8 @@ import Jobs from "./pages/jobs/Jobs"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
-import Services from "./pages/Services/Services"
+import Services from "./pages/services/Services"
+import ServiceForm from "./pages/services/ServiceForm"
 import Settings from "./pages/Settings"
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/services/:serviceId" element={<ServiceForm />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

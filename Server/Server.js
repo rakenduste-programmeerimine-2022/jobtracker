@@ -2,12 +2,14 @@ const express = require("express")
 const cors = require("cors")
 const cookieSession = require("cookie-session")
 const dotenv = require("dotenv")
+const serviceRoutes = require("./routes/service.routes")
 
 dotenv.config()
 const app = express()
 
 let corsOptions = {
   origin: "http://localhost:3000",
+  //origin: true,
 }
 
 app.use(cors(corsOptions))
@@ -25,7 +27,7 @@ app.use(
   })
 )
 
-require("./Routes/auth.routes")(app)
+require("./routes/auth.routes")(app)
 
 const PORT = process.env.PORT || 8080
 
@@ -33,7 +35,7 @@ app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}.`)
 })
 
-const db = require("./Models")
+const db = require("./models")
 
 //console.log(db)
 
@@ -46,3 +48,5 @@ db.mongoose
     console.error("Connection error", err)
     process.exit()
   })
+
+app.use("/api/services", serviceRoutes)
