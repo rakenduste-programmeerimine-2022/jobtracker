@@ -41,10 +41,12 @@ exports.create = async (req, res) => {
 
 exports.read = async (req, res) => {
   let id = req.params?.id
-  console.log(id)
+  console.log(req)
+  console.log("tere")
 
   if (id !== undefined) {
     const item = await Item.findOne({ _id: ObjectId(id) })
+    console.log(item)
     res.send(item)
   } else {
     const items = await Item.find({})

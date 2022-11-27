@@ -40,17 +40,17 @@ const Layout = ({ children, window }) => {
     mdOnly && setOpen(!open)
   }
 
-  async function logOutClick(){
-            const data = await fetch("http://localhost:8080/auth/signout", {
-              credentials: "include",
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }})
-            const json = await data.json()
-        
-            
-            console.log(json)
+  async function logOutClick() {
+    const data = await fetch("http://localhost:8080/auth/signout", {
+      credentials: "include",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const json = await data.json()
+
+    console.log(json)
   }
 
   useEffect(() => {
@@ -211,15 +211,23 @@ const Layout = ({ children, window }) => {
                     <ListItemText primary={item.name} />
                   </MenuListItem>
                 ))}
-                <MenuListItem >
+                <MenuListItem>
                   <ListItemIcon />
-                  <Typography sx={{'&:hover':{cursor: "pointer"}}} onClick={logOutClick} >Logi välja</Typography>
+                  <Typography
+                    sx={{ "&:hover": { cursor: "pointer" } }}
+                    onClick={logOutClick}
+                  >
+                    Logi välja
+                  </Typography>
                 </MenuListItem>
               </List>
             </Stack>
           </Drawer>
         </Box>
-       <Outlet/>
+        <Box component="main" sx={{ p: 3 }}>
+          {mdOnly && <Toolbar />}
+          <Outlet />
+        </Box>
       </Box>
     </>
   )

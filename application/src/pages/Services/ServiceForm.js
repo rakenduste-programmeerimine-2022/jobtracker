@@ -16,6 +16,7 @@ const SERVICE_URL = "/api/services"
 
 const ServiceForm = ({ fetchData }) => {
   const { serviceId } = useParams()
+  console.log(serviceId)
 
   const initialValues = {
     userId: "algne", //siia tuleb see tekitada
@@ -110,7 +111,7 @@ const ServiceForm = ({ fetchData }) => {
       resetForm()
       fetchData()
       //õnnestumise teade
-      setSnackbarMessage("Muutmine õnnestus!")
+      setSnackbarMessage("Lisamine õnnestus!")
       showSnackbar()
     } catch (err) {
       // Handle Error Here

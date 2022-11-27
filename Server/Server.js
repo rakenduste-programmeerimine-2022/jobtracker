@@ -27,7 +27,7 @@ app.use(
   })
 )
 
-require("./Routes/auth.routes")(app)
+require("./routes/auth.routes")(app)
 
 const PORT = process.env.PORT || 8080
 
@@ -35,9 +35,9 @@ app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}.`)
 })
 
-const db = require("./Models")
+const db = require("./models")
 
-console.log(db)
+//console.log(db)
 
 db.mongoose
   .connect(process.env.DB)

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import ServiceFrom from "./ServiceForm"
 import { Box, Divider } from "@mui/material"
 import axios from "../../api/axios"
+import { NavLink } from "react-router-dom"
 
 const SERVICE_URL = "/api/services/"
 
@@ -32,6 +33,9 @@ const Services = () => {
             <div key={service._id}>
               <span>{service.code}</span>
               <span>{service.description}</span>
+              <span>
+                <NavLink to={service._id}>{service.description}</NavLink>
+              </span>
             </div>
           )
         })}

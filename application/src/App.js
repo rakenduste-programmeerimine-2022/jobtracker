@@ -14,19 +14,22 @@ import PrivateRoutes from "./utilities/PrivateRoutes"
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Jobs />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route element={<PrivateRoutes />}>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Jobs />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/:id" element={<ServiceForm />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Route>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </BrowserRouter>
   )
 }
