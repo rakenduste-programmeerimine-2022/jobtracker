@@ -9,7 +9,7 @@ const app = express()
 
 let corsOptions = {
   origin: "http://localhost:3000",
-  //origin: true,
+  credentials: true,
 }
 
 app.use(cors(corsOptions))
@@ -27,7 +27,7 @@ app.use(
   })
 )
 
-require("./routes/auth.routes")(app)
+require("./Routes/auth.routes")(app)
 
 const PORT = process.env.PORT || 8080
 
@@ -35,9 +35,9 @@ app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}.`)
 })
 
-const db = require("./models")
+const db = require("./Models")
 
-//console.log(db)
+console.log(db)
 
 db.mongoose
   .connect(process.env.DB)

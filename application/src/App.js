@@ -9,6 +9,7 @@ import Register from "./pages/Register"
 import Services from "./pages/services/Services"
 import ServiceForm from "./pages/services/ServiceForm"
 import Settings from "./pages/Settings"
+import PrivateRoutes from "./utilities/PrivateRoutes"
 
 function App() {
   return (
@@ -22,7 +23,6 @@ function App() {
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/services" element={<Services />} />
-          <Route path="/services/:serviceId" element={<ServiceForm />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

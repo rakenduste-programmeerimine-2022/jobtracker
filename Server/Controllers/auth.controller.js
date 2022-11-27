@@ -70,6 +70,16 @@ exports.signin = (req, res) => {
       email: user.email,
     })
   })
+        console.log(req.session.token)
+
+        res.status(200).send({
+            id: user._id,
+            name: user.name,
+            surname: user.surname,
+            email: user.email
+        })
+
+      })
 }
 
 exports.signout = async (req, res) => {
@@ -79,4 +89,27 @@ exports.signout = async (req, res) => {
   } catch (err) {
     this.next(err)
   }
+
+exports.tokencheck = async(req,res) => {
+    let token = req.session.token;
+    console.log(token)
+    try{
+        if(!token){
+            return res.status(200).send({success: false})
+        }else{
+            return res.status(200).send({success: true})
+        }
+        
+    }catch(err){
+        this.next(err)
+    }
+}
+
+exports.signout = async(req,res) => {
+    try{
+        req.session = null;
+        return res.status(200).send({message: "You've been signed out!"})
+    }catch(err){
+        this.next(err)
+    }
 }
