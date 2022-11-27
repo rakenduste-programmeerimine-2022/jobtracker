@@ -42,7 +42,7 @@ exports.create = async (req, res) => {
 exports.read = async (req, res) => {
   let id = req.params?.id
   console.log(req)
-  console.log("tere")
+  //console.log("tere")
 
   if (id !== undefined) {
     const item = await Item.findOne({ _id: ObjectId(id) })

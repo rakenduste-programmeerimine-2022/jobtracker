@@ -22,6 +22,7 @@ function App() {
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/clients" element={<Clients />} />
             <Route path="/services" element={<Services />} />
+            {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
             <Route path="/services/:id" element={<ServiceForm />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />

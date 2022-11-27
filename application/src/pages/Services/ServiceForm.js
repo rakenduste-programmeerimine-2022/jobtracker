@@ -7,16 +7,15 @@ import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
-import { useParams } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 const SERVICE_URL = "/api/services"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
 const ServiceForm = ({ fetchData }) => {
-  const { serviceId } = useParams()
-  console.log(serviceId)
+  const { id } = useParams()
+  console.log(id)
 
   const initialValues = {
     userId: "algne", //siia tuleb see tekitada
@@ -73,8 +72,7 @@ const ServiceForm = ({ fetchData }) => {
   }
 
   useEffect(() => {
-    if (serviceId !== undefined) {
-      const id = serviceId
+    if (id !== undefined) {
       const api = SERVICE_URL + "/" + id
       console.log(id)
       const fetchItem = async (api) => {
@@ -138,7 +136,7 @@ const ServiceForm = ({ fetchData }) => {
 
   const handleEditService = async (updatedService) => {
     try {
-      const UPDATE_URL = SERVICE_URL + "/" + serviceId
+      const UPDATE_URL = SERVICE_URL + "/" + id
       const response = await axios.put(UPDATE_URL, updatedService)
       //õnnestumise teade
       setSnackbarMessage("Muutmine õnnestus!")
@@ -169,7 +167,7 @@ const ServiceForm = ({ fetchData }) => {
 
   const handleDeleteService = async () => {
     try {
-      const DELETE_URL = SERVICE_URL + "/" + serviceId
+      const DELETE_URL = SERVICE_URL + "/" + id
       const response = await axios.delete(DELETE_URL)
       console.log(response.data)
     } catch (err) {
@@ -237,7 +235,7 @@ const ServiceForm = ({ fetchData }) => {
             options={getTaxRates()}
             width="100px"
           />
-          {serviceId !== undefined ? (
+          {id !== undefined ? (
             <>
               <Button type="edit" text="Muuda" onClick={handleEdit} />
               <Button text="kustuta" onClick={handleDialogOpen} />
