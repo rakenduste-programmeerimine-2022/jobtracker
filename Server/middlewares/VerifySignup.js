@@ -1,29 +1,24 @@
-const db = require("../Models")
-const User = db.user;
+const db = require("../models")
+const User = db.user
 
 checkEmailDuplicate = (req, res, next) => {
+  console.log(req.body)
 
-    console.log(req.body)
+  User.findOne({
+    email: req.body.email,
+  }).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err })
+      return
+    }
 
-    User.findOne({
-        email: req.body.email
-    }).exec((err, user) => {
-        if(err){
-            res.status(500).send({message: err});
-            return
-        }
+    if (user) {
+      res.status(400).send({ message: "Failed! Email is already in use!" })
+      return
+    }
 
-        if (user) {
-            res.status(400).send({ message: "Failed! Email is already in use!" });
-            return;
-        }
-
-        next();
-
-    })
-
+    next()
+  })
 }
 
- 
-
-    module.exports = checkEmailDuplicate
+module.exports = checkEmailDuplicate
