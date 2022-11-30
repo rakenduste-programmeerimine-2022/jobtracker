@@ -1,6 +1,6 @@
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import React, { useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const Login = () => {
 
@@ -55,6 +55,9 @@ const Login = () => {
 
     const response = await fetch("http://localhost:8080/auth/signin", requestOptions);
     const data = await response.json();
+    if(data.message !== "User Not found."){
+      window.location.href = "/jobs"
+    }
     console.log(data);
   }
 

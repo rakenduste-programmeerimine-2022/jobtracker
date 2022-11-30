@@ -1,0 +1,23 @@
+{
+  "name": "jobtracker",
+  "version": "1.0.0",
+  "description": "Eesmärk on luua rakendus, kus kasutaja saab lisada ja hallata töid ning nende alusel arveid genereerida. Uue töö lisamisel tuleb valida teenuste loetelust vastav teenus, millega tuleb kaasa eelseadistatud teenuse kirjeldus, ühiku hind, käibemaksumäär. Samuti tuleb valida klient, kellele hiljem arve esitatakse. Arvele on võimalik lisada sama kliendi töid, millele ei ole arvet veel koostatud. Arveid on võimalik muuta ja alla laadida.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rakenduste-programmeerimine-2022/jobtracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rakenduste-programmeerimine-2022/jobtracker/issues"
+  },
+  "homepage": "https://github.com/rakenduste-programmeerimine-2022/jobtracker#readme",
+  "dependencies": {
+    "primeicons": "^6.0.1",
+    "primereact": "^8.7.2"
+  }
+}
