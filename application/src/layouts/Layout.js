@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { NavLink } from "react-router-dom"
+import { NavLink, Outlet } from "react-router-dom"
 import {
   AppBar,
   Box,
@@ -38,6 +38,19 @@ const Layout = ({ children, window }) => {
 
   const handleDrawerToggle = () => {
     mdOnly && setOpen(!open)
+  }
+
+  async function logOutClick() {
+    const data = await fetch("http://localhost:8080/auth/signout", {
+      credentials: "include",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const json = await data.json()
+
+    console.log(json)
   }
 
   useEffect(() => {
@@ -200,7 +213,12 @@ const Layout = ({ children, window }) => {
                 ))}
                 <MenuListItem>
                   <ListItemIcon />
-                  <ListItemText primary="Logi välja" />
+                  <Typography
+                    sx={{ "&:hover": { cursor: "pointer" } }}
+                    onClick={logOutClick}
+                  >
+                    Logi välja
+                  </Typography>
                 </MenuListItem>
               </List>
             </Stack>
@@ -208,7 +226,7 @@ const Layout = ({ children, window }) => {
         </Box>
         <Box component="main" sx={{ p: 3 }}>
           {mdOnly && <Toolbar />}
-          {children}
+          <Outlet />
         </Box>
       </Box>
     </>
