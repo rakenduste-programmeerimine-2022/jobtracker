@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
 import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
@@ -8,6 +8,8 @@ import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
 import { useNavigate, useParams } from "react-router-dom"
+import ServiceContext from "../../Contexts/ServiceContext"
+
 
 const SERVICE_URL = "/api/services"
 
@@ -15,7 +17,7 @@ const SERVICE_URL = "/api/services"
 
 const ServiceForm = ({ fetchData }) => {
   const { id } = useParams()
-  console.log(id)
+  const [datatoTransfer, setDataToTransfer] = useContext(ServiceContext)
 
   const initialValues = {
     userId: "algne", //siia tuleb see tekitada
@@ -73,6 +75,7 @@ const ServiceForm = ({ fetchData }) => {
 
   useEffect(() => {
     if (id !== undefined) {
+      console.log(id)
       const api = SERVICE_URL + "/" + id
       console.log(id)
       const fetchItem = async (api) => {
@@ -104,13 +107,16 @@ const ServiceForm = ({ fetchData }) => {
   }
 
   const handleAddService = async (newService) => {
+    console.log(newService)
     try {
-      await axios.post(SERVICE_URL, newService)
+      console.log(newService)
+      await axios.post(SERVICE_URL, newService).then(function(response){console.log(response)})
       resetForm()
       fetchData()
       //õnnestumise teade
       setSnackbarMessage("Lisamine õnnestus!")
       showSnackbar()
+      setDataToTransfer(newService);
     } catch (err) {
       // Handle Error Here
       console.error(err)
@@ -135,8 +141,11 @@ const ServiceForm = ({ fetchData }) => {
   }
 
   const handleEditService = async (updatedService) => {
+    
     try {
       const UPDATE_URL = SERVICE_URL + "/" + id
+      console.log(UPDATE_URL)
+      console.log(updatedService)
       const response = await axios.put(UPDATE_URL, updatedService)
       //õnnestumise teade
       setSnackbarMessage("Muutmine õnnestus!")
@@ -217,6 +226,7 @@ const ServiceForm = ({ fetchData }) => {
           />
           <InputField
             required
+            type="number"
             label="Hind"
             name="price"
             value={values.price}
