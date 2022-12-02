@@ -224,7 +224,7 @@ const Layout = ({ children, window }) => {
             </Stack>
           </Drawer>
         </Box>
-        <Box component="main" sx={{ p: 3 }}>
+        <Box component="main" width={"100%"} sx={{ p: 3 }}>
           {mdOnly && <Toolbar />}
           <Outlet />
         </Box>

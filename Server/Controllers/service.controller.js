@@ -7,9 +7,9 @@ const serviceSchema = new mongoose.Schema(
     code: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     unit: { type: String, required: true },
-    price: { type: mongoose.Types.Decimal128, required: true },
+    price: { type: Number, required: true },
     tax: {
-      type: mongoose.Types.Decimal128,
+      type: String,
       enum: ["0.0", "9.0", "20.0"],
       default: "20.0",
     },
@@ -21,6 +21,7 @@ const Item = mongoose.model("Service", serviceSchema)
 
 exports.create = async (req, res) => {
   const { userId, code, description, unit, price, tax } = req.body
+  console.log(req)
 
   const codeExists = await Item.findOne({ code })
   if (codeExists) {
