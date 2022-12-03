@@ -44,4 +44,5 @@ module.exports = async function (app) {
   app.post("/auth/signin", controller.signin)
   app.get("/auth/signout", controller.signout)
   app.get("/auth/tokencheck", controller.tokencheck)
+  app.put("/auth/user/:id?", controller.update)
 }

@@ -1,6 +1,7 @@
 const db = require("../models")
-const User = db.user
+const ObjectId = require("mongodb").ObjectID
 const dotenv = require("dotenv")
+const User = db.user
 dotenv.config()
 
 var jwt = require("jsonwebtoken")
@@ -16,7 +17,6 @@ exports.signup = (req, res) => {
     regNumber: regNumber,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    registerDate: new Date(),
   })
 
   user.save((err) => {
@@ -94,5 +94,67 @@ exports.signout = async (req, res) => {
     return res.status(200).send({ message: "You've been signed out!" })
   } catch (err) {
     this.next(err)
+  }
+}
+
+//vaja teha
+exports.update = async (req, res) => {
+  const {
+    name,
+    surname,
+    email,
+    businessName,
+    regNumber,
+    vat,
+    address,
+    iban,
+    password,
+  } = req.body
+
+  hashedPassword = bcrypt.hashSync(password, 8)
+
+  const { id } = req.params
+  console.log(id)
+  const filter = { _id: ObjectId(id) }
+  const update = {
+    name,
+    surname,
+    email,
+    businessName,
+    regNumber,
+    vat,
+    address,
+    iban,
+    password: hashedPassword,
+  }
+
+  // const regNumberExists = await User.findOne({ regNumber })
+  let canProceed = true
+
+  /*   if (regNumberExists !== null) {
+    console.log(regNumberExists)
+    if (regNumberExists._id.toString() !== id) {
+      canProceed = false
+    }
+  } */
+
+  if (!canProceed) {
+    res.status(499).send("Registreerimiskood on juba kasutusel")
+    console.log("499")
+  } else {
+    User.findOneAndReplace(
+      filter,
+      update,
+      {
+        returnDocument: "after",
+      },
+      function (err, result) {
+        if (err) {
+          res.send(err)
+        } else {
+          res.status(200).send(result)
+        }
+      }
+    )
   }
 }
