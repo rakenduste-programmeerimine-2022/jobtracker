@@ -1,25 +1,19 @@
+import { useContext } from "react"
 import axios from "../api/axios"
+import { Grid, Typography } from "@mui/material"
 import { Form, useForm } from "../components/useForm"
 import { Snackbar, useSnackbar } from "../components/useSnackbar"
 import { InputField } from "../components/controls/Input"
 import { Button } from "../components/controls/Button"
-import { Grid, Typography } from "@mui/material"
+import UserContext from "../contexts/UserContext"
 
 const USER_URL = "/auth/user/"
 
 const Settings = () => {
+  const { userData, setUserData } = useContext(UserContext)
+  const id = userData.id
   const initialValues = {
-    id: "638b10f68038b5b888c3ad29", //siia tuleb see tekitada
-    name: "Mari",
-    surname: "Maasike",
-    email: "rynk@tlu.ee",
-    businessName: "",
-    regNumber: "",
-    vat: "",
-    address: "",
-    iban: "",
-    password: "J0bTracker",
-    password2: "J0bTracker",
+    ...userData.user,
   }
 
   const validate = (fieldValues = values) => {
@@ -75,17 +69,20 @@ const Settings = () => {
     e.preventDefault()
 
     if (validate()) {
-      console.log(values)
       handleUpdate(values)
     }
   }
 
-  const handleUpdate = async (updatedItem) => {
+  const handleUpdate = async (updatedValues) => {
     try {
-      const UPDATE_URL = USER_URL + initialValues.id
-      const response = await axios.put(UPDATE_URL, updatedItem)
+      const UPDATE_URL = USER_URL + id
+      const response = await axios.put(UPDATE_URL, updatedValues)
       //õnnestumise teade
       if (response.status === 200) {
+        //let temp = {user: {...updatedValues}}
+        let temp = { ...userData }
+        temp.user = { ...updatedValues }
+        setUserData(temp)
         setSnackbarMessage("Muutmine õnnestus!")
         showSnackbar()
       }

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-var ObjectId = require("mongodb").ObjectID
+const ObjectId = require("mongodb").ObjectID
 
 const serviceSchema = new mongoose.Schema(
   {
@@ -42,15 +42,15 @@ exports.create = async (req, res) => {
 
 exports.read = async (req, res) => {
   let id = req.params?.id
-  console.log(req)
-  //console.log("tere")
+  const userId = req.query?.userId
+  console.log(req.query)
 
   if (id !== undefined) {
     const item = await Item.findOne({ _id: ObjectId(id) })
     console.log(item)
     res.send(item)
   } else {
-    const items = await Item.find({})
+    const items = await Item.find({ userId })
     res.send(items)
   }
 }

@@ -17,6 +17,7 @@ exports.signup = (req, res) => {
     regNumber: regNumber,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
+    iban: req.body.iban,
   })
 
   user.save((err) => {
@@ -67,9 +68,16 @@ exports.signin = (req, res) => {
 
     res.status(200).send({
       id: user._id,
-      name: user.name,
-      surname: user.surname,
-      email: user.email,
+      user: {
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        businessName: user.businessName,
+        regNumber: user.regNumber,
+        vat: user.vat,
+        address: user.address,
+        iban: user.iban,
+      },
     })
   })
 }
@@ -99,62 +107,25 @@ exports.signout = async (req, res) => {
 
 //vaja teha
 exports.update = async (req, res) => {
-  const {
-    name,
-    surname,
-    email,
-    businessName,
-    regNumber,
-    vat,
-    address,
-    iban,
-    password,
-  } = req.body
-
-  hashedPassword = bcrypt.hashSync(password, 8)
-
   const { id } = req.params
-  console.log(id)
+  //console.log(id)
   const filter = { _id: ObjectId(id) }
-  const update = {
-    name,
-    surname,
-    email,
-    businessName,
-    regNumber,
-    vat,
-    address,
-    iban,
-    password: hashedPassword,
-  }
+  let content = req.body
+  if (content.password !== undefined)
+    content.password = bcrypt.hashSync(content.password, 8)
 
-  // const regNumberExists = await User.findOne({ regNumber })
-  let canProceed = true
-
-  /*   if (regNumberExists !== null) {
-    console.log(regNumberExists)
-    if (regNumberExists._id.toString() !== id) {
-      canProceed = false
-    }
-  } */
-
-  if (!canProceed) {
-    res.status(499).send("Registreerimiskood on juba kasutusel")
-    console.log("499")
-  } else {
-    User.findOneAndReplace(
-      filter,
-      update,
-      {
-        returnDocument: "after",
-      },
-      function (err, result) {
-        if (err) {
-          res.send(err)
-        } else {
-          res.status(200).send(result)
-        }
+  User.findOneAndUpdate(
+    filter,
+    content,
+    {
+      returnDocument: "after",
+    },
+    function (err, result) {
+      if (err) {
+        res.send(err)
+      } else {
+        res.status(200).send(result)
       }
-    )
-  }
+    }
+  )
 }

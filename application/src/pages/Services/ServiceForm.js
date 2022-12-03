@@ -8,8 +8,7 @@ import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
 import { useNavigate, useParams } from "react-router-dom"
-import ServiceContext from "../../Contexts/ServiceContext"
-
+import ServiceContext from "../../contexts/ServiceContext"
 
 const SERVICE_URL = "/api/services"
 
@@ -110,13 +109,15 @@ const ServiceForm = ({ fetchData }) => {
     console.log(newService)
     try {
       console.log(newService)
-      await axios.post(SERVICE_URL, newService).then(function(response){console.log(response)})
+      await axios.post(SERVICE_URL, newService).then(function (response) {
+        console.log(response)
+      })
       resetForm()
       fetchData()
       //õnnestumise teade
       setSnackbarMessage("Lisamine õnnestus!")
       showSnackbar()
-      setDataToTransfer(newService);
+      setDataToTransfer(newService)
     } catch (err) {
       // Handle Error Here
       console.error(err)
@@ -141,7 +142,6 @@ const ServiceForm = ({ fetchData }) => {
   }
 
   const handleEditService = async (updatedService) => {
-    
     try {
       const UPDATE_URL = SERVICE_URL + "/" + id
       console.log(UPDATE_URL)
