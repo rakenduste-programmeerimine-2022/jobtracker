@@ -108,6 +108,9 @@ const ServiceForm = ({ fetchData }) => {
 
   const handleAddService = async (newService) => {
     console.log(newService)
+    newService.tax = parseInt(newService.tax)
+    newService.price = parseInt(newService.price)
+    console.log(newService)
     try {
       console.log(newService)
       await axios.post(SERVICE_URL, newService).then(function(response){console.log(response)})
@@ -239,6 +242,7 @@ const ServiceForm = ({ fetchData }) => {
             required
             label="KM"
             name="tax"
+            type="number"
             value={values.tax}
             error={errors.tax}
             onChange={handleInputChange}

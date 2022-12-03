@@ -31,10 +31,15 @@ function ServiceTable(){
     const [deletableData, setDeletableData] = useState();
     const [deleteDataDialog, setDeleteDataDialog] = useState(false);
 
+    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" />;
+    const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text" />;
+
     const fetchData = async () => {
         const response = await axios.get(SERVICE_URL)
             setData(response.data)
     }
+
+    console.log(tableData)
     
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -98,13 +103,13 @@ function ServiceTable(){
 
     const getStatusLabel = (status) => {
         switch (status) {
-            case 0:
+            case 0.0:
                 return '0%';
 
-            case 9:
+            case 9.0:
                 return '9%';
 
-            case 20:
+            case 20.0:
                 return '20%';
 
             default:
@@ -113,9 +118,9 @@ function ServiceTable(){
     }
 
     const statuses = [
-        { label: '0%', value: 0 },
-        { label: '9%', value: 9 },
-        { label: '20%', value: 20 }
+        { label: '0%', value: 0.0 },
+        { label: '9%', value: 9.0 },
+        { label: '20%', value: 20.0 }
     ];
 
     const onRowEditComplete1 = (e) => {
@@ -202,7 +207,11 @@ function ServiceTable(){
 
             <Toast ref={toast}/>
             <div className="card p-fluid">
-                <DataTable value={tableData} sortField="code" sortOrder={1} resizableColumns  editMode="row" size='small' dataKey="id" showGridlines  stripedRows onRowEditComplete={onRowEditComplete1} responsiveLayout="scroll">
+                <DataTable value={tableData} paginator
+                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                currentPageReportTemplate="Näitan {first} kuni {last} rida {totalRecords}-st" rows={10} rowsPerPageOptions={[10,20,50]}
+                paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}
+                sortField="code" sortOrder={1} resizableColumns  editMode="row" size='small' dataKey="id" showGridlines  stripedRows onRowEditComplete={onRowEditComplete1} responsiveLayout="scroll">
                     <Column field="code" header="Kood" sortable editor={(options) => textEditor(options)} style={{ width: '15%' }} resizeable={false}></Column>
                     <Column field="description" sortable header="Kirjeldus" editor={(options) => textEditor(options)} style={{ width: '45%' }} resizeable={false}></Column>
                     <Column field="unit" header="Ühik" sortable editor={(options) => textEditor(options)} style={{ width: '15%' }} resizeable={false}></Column>
