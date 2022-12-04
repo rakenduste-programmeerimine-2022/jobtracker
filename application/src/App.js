@@ -17,6 +17,7 @@ import UserContext from "./contexts/UserContext"
 function App() {
   const [userData, setUserData] = useState(null)
   const [serviceData, setServiceData] = useState(null)
+  const [clientData, setClientData] = useState(null)
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
@@ -35,7 +36,7 @@ function App() {
         }
       }
     }
-    const loadClientData = async () => {
+    /*   const loadClientData = async () => {
       if (userData) {
         try {
           const response = await axios.get(CLIENT_URL, {
@@ -43,23 +44,23 @@ function App() {
               userId: userData.id,
             },
           })
-          setServiceData(response.data)
+          setClientData(response.data)
         } catch (error) {
           console.log(error)
         }
       }
-    }
+    } */
     loadServiceData()
     //loadClientData()
   }, [userData])
 
   const providerValue = useMemo(
     () => ({ userData, setUserData, serviceData, setServiceData }),
-    [userData]
+    [userData, setUserData, serviceData, setServiceData]
   )
 
-  console.log(userData)
-  console.log(serviceData)
+  //console.log(userData)
+  //console.log(serviceData)
 
   return (
     <BrowserRouter>

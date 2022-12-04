@@ -22,7 +22,7 @@ import { DropDownInput } from "../controls/Input"
 import { useParams } from "react-router-dom"
 import { SettingsPowerRounded } from "@mui/icons-material"
 import MuiAlert from "@mui/material/Alert"
-import ServiceContext from "../../contexts/ServiceContext"
+//import ServiceContext from "../../contexts/ServiceContext"
 import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services/"
@@ -33,10 +33,10 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 function ServiceTable() {
   const { userData, serviceData, setServiceData } = useContext(UserContext)
 
-  const [contextData, setcontextData] = useContext(ServiceContext)
+  //const [contextData, setcontextData] = useContext(ServiceContext)
   const [open, setOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [tableData, setData] = useState([])
+  //const [tableData, setData] = useState([])
   const [deletableData, setDeletableData] = useState()
   const [deleteDataDialog, setDeleteDataDialog] = useState(false)
 
@@ -46,17 +46,6 @@ function ServiceTable() {
   const paginatorRight = (
     <Button type="button" icon="pi pi-cloud" className="p-button-text" />
   )
-
-  const fetchData = async () => {
-    const response = await axios.get(SERVICE_URL, {
-      params: {
-        userId: userData.id,
-      },
-    })
-    setData(response.data)
-  }
-
-  console.log(tableData)
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -68,25 +57,20 @@ function ServiceTable() {
     setDeleteDataDialog(false)
   }
 
-  useEffect(() => {
-    if (contextData !== "") {
-      tableData.push(contextData)
-      console.log("useEffect called")
-    }
-  }, [contextData])
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   const handleEditService = async (updatedService) => {
     try {
-      const UPDATE_URL = SERVICE_URL + "/" + updatedService.newData._id
-      console.log(UPDATE_URL)
-      console.log(updatedService.newData)
+      const UPDATE_URL = SERVICE_URL + updatedService.newData._id
       const response = await axios.put(UPDATE_URL, updatedService.newData)
+      //kasutajakonteksti lisamine
+      if (response.status === 200) {
+        let temp = [...serviceData]
+        let index = temp.findIndex(
+          (element) => element._id === updatedService.newData._id
+        )
+        temp[index] = updatedService.newData
+        setServiceData(temp)
+      }
       //õnnestumise teade
-      console.log(response.data)
       setOpen(true)
     } catch (err) {
       // Handle Error Here
@@ -96,9 +80,13 @@ function ServiceTable() {
 
   const handleDeleteService = async () => {
     try {
-      const DELETE_URL = SERVICE_URL + "/" + deletableData._id
+      const DELETE_URL = SERVICE_URL + deletableData._id
       const response = await axios.delete(DELETE_URL)
-      console.log(response.data)
+      if (response.status === 200) {
+        let temp = [...serviceData]
+        temp = temp.filter((service) => service._id !== deletableData._id)
+        setServiceData(temp)
+      }
     } catch (err) {
       // Handle Error Here
       console.error(err)
@@ -138,12 +126,11 @@ function ServiceTable() {
   ]
 
   const onRowEditComplete1 = (e) => {
-    let _tableData = [...tableData]
+    let temp = [...serviceData]
     let { newData, index } = e
 
-    _tableData[index] = newData
+    temp[index] = newData
 
-    setData(_tableData)
     handleEditService(e)
   }
 
@@ -178,10 +165,8 @@ function ServiceTable() {
   }
 
   const deleteData = () => {
-    console.log(deletableData)
-    let _products = tableData.filter((val) => val._id !== deletableData._id)
+    let _products = serviceData.filter((val) => val._id !== deletableData._id)
     handleDeleteService()
-    setData(_products)
     setDeleteDataDialog(false)
     setDeletableData(null)
     setDeleteOpen(true)
@@ -244,7 +229,7 @@ function ServiceTable() {
       <Toast ref={toast} />
       <div className="card p-fluid">
         <DataTable
-          value={tableData}
+          value={serviceData}
           paginator
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Näitan {first} kuni {last} rida {totalRecords}-st"
@@ -324,7 +309,7 @@ function ServiceTable() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle>{"Olete kindel, et soovite rida kustutada?"}</DialogTitle>
+        <DialogTitle>{"Olete kindel, et soovite rea kustutada?"}</DialogTitle>
         <DialogActions>
           <Button onClick={handleClose}>EI</Button>
           <Button onClick={deleteData} autoFocus>

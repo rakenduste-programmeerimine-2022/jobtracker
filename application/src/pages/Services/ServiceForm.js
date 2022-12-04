@@ -16,7 +16,7 @@ const SERVICE_URL = "/api/services"
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
 const ServiceForm = ({ fetchData }) => {
-  const { id } = useParams()
+  /*   const { id } = useParams() */
   const { userData, serviceData, setServiceData } = useContext(UserContext)
   const userId = userData.id
   const [datatoTransfer, setDataToTransfer] = useContext(ServiceContext)
@@ -65,7 +65,7 @@ const ServiceForm = ({ fetchData }) => {
   const { values, errors, setValues, setErrors, handleInputChange, resetForm } =
     useForm(initialValues, true, validate)
 
-  const fetchDataCall = async ({ api }) => {
+  /* const fetchDataCall = async ({ api }) => {
     let apiReturn = await axios
       .get(api)
       .then((response) => response.data)
@@ -98,42 +98,37 @@ const ServiceForm = ({ fetchData }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
+ */
   const handleSubmit = (e) => {
     e.preventDefault()
 
     if (validate()) {
-      console.log(values)
       handleAddService(values)
     }
   }
 
   const handleAddService = async (newService) => {
-    console.log(newService)
     newService.tax = parseInt(newService.tax)
     newService.price = parseInt(newService.price)
-    console.log(newService)
     try {
-      console.log(newService)
-      await axios.post(SERVICE_URL, newService).then(function (response) {
-        console.log(response)
-      })
-      resetForm()
-      fetchData()
-      //õnnestumise teade
-      setSnackbarMessage("Lisamine õnnestus!")
-      showSnackbar()
-      setDataToTransfer(newService)
-      //kasutajakonteksti lisamine
-      let temp = { ...serviceData }
-      temp.push(newService)
-      setServiceData(temp)
+      let response = await axios.post(SERVICE_URL, newService)
+      if (response.status === 200) {
+        resetForm()
+
+        //õnnestumise teade SEE EI TÖÖTA
+        setSnackbarMessage("Lisamine õnnestus!")
+        showSnackbar()
+        //kasutajakonteksti lisamine
+        let temp = [...serviceData]
+        temp.push(newService)
+        setServiceData(temp)
+      }
     } catch (err) {
       // Handle Error Here
       console.error(err)
       let temp = { ...errors }
 
-      if (err.response.status === 499) {
+      if (err.response?.status === 499) {
         temp.code = "See kood on juba võetud."
       }
       setErrors({
@@ -141,7 +136,7 @@ const ServiceForm = ({ fetchData }) => {
       })
     }
   }
-
+  /* 
   const handleEdit = (e) => {
     e.preventDefault()
 
@@ -194,7 +189,7 @@ const ServiceForm = ({ fetchData }) => {
       console.error(err)
     }
   }
-
+ */
   const { dialogOpen, handleDialogOpen, handleDialogClose } = useAlertDialog()
   const {
     snackbarOpen,
@@ -244,7 +239,6 @@ const ServiceForm = ({ fetchData }) => {
             onChange={handleInputChange}
             width="120px"
           />
-
           <DropDownInput
             required
             label="KM"
@@ -256,7 +250,7 @@ const ServiceForm = ({ fetchData }) => {
             options={getTaxRates()}
             width="100px"
           />
-          {id !== undefined ? (
+          {/* {id !== undefined ? (
             <>
               <Button type="edit" text="Muuda" onClick={handleEdit} />
               <Button text="kustuta" onClick={handleDialogOpen} />
@@ -273,9 +267,9 @@ const ServiceForm = ({ fetchData }) => {
                 onDelete={handleDelete}
               />
             </>
-          ) : (
-            <Button type="submit" text="Lisa" onClick={handleSubmit} />
-          )}
+          ) : ( */}
+          <Button type="submit" text="Lisa" onClick={handleSubmit} />
+          {/*   )} */}
         </Grid>
       </Grid>
     </Form>

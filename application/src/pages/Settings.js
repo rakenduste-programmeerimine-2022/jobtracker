@@ -10,7 +10,7 @@ import UserContext from "../contexts/UserContext"
 const USER_URL = "/auth/user/"
 
 const Settings = () => {
-  const { userData, setUserData } = useContext(UserContext)
+  const { userData, setUserData, serviceData } = useContext(UserContext)
   const id = userData.id
   const initialValues = {
     ...userData.user,
@@ -86,7 +86,6 @@ const Settings = () => {
         setSnackbarMessage("Muutmine õnnestus!")
         showSnackbar()
       }
-      console.log(response.status)
     } catch (err) {
       // Handle Error Here
       console.error(err)
@@ -94,7 +93,6 @@ const Settings = () => {
 
       if (err.response.status === 499) {
         temp.code = "See registreerimiskood on juba kasutusel."
-        console.log("499")
       }
       setErrors({
         ...temp,
