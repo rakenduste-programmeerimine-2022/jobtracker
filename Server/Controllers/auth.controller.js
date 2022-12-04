@@ -1,6 +1,7 @@
 const db = require("../models")
-const User = db.user
+const ObjectId = require("mongodb").ObjectID
 const dotenv = require("dotenv")
+const User = db.user
 dotenv.config()
 
 var jwt = require("jsonwebtoken")
@@ -16,7 +17,7 @@ exports.signup = (req, res) => {
     regNumber: regNumber,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    registerDate: new Date(),
+    iban: req.body.iban,
   })
 
   user.save((err) => {
@@ -67,9 +68,16 @@ exports.signin = (req, res) => {
 
     res.status(200).send({
       id: user._id,
-      name: user.name,
-      surname: user.surname,
-      email: user.email,
+      user: {
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        businessName: user.businessName,
+        regNumber: user.regNumber,
+        vat: user.vat,
+        address: user.address,
+        iban: user.iban,
+      },
     })
   })
 }
@@ -95,4 +103,29 @@ exports.signout = async (req, res) => {
   } catch (err) {
     this.next(err)
   }
+}
+
+//vaja teha
+exports.update = async (req, res) => {
+  const { id } = req.params
+  //console.log(id)
+  const filter = { _id: ObjectId(id) }
+  let content = req.body
+  if (content.password !== undefined)
+    content.password = bcrypt.hashSync(content.password, 8)
+
+  User.findOneAndUpdate(
+    filter,
+    content,
+    {
+      returnDocument: "after",
+    },
+    function (err, result) {
+      if (err) {
+        res.send(err)
+      } else {
+        res.status(200).send(result)
+      }
+    }
+  )
 }

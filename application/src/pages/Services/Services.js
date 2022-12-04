@@ -1,44 +1,20 @@
-import React, { createContext, useEffect, useState } from "react"
 import ServiceFrom from "./ServiceForm"
 import { Box, Divider } from "@mui/material"
-import axios from "../../api/axios"
-import { NavLink } from "react-router-dom"
-import ServiceTable from "../../components/Tables/ServiceTable"
-import ServiceContext from "../../Contexts/ServiceContext"
-
-const SERVICE_URL = "/api/services/"
+import ServiceTable from "../../components/tables/ServiceTable"
 
 const Services = () => {
-  const [services, setServices] = useState([])
-
-  const [addService, setAddService] = useState("")
-
-  const fetchData = async () => {
-    const response = await axios.get(SERVICE_URL)
-    setServices(response.data)
-  }
-  
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   return (
-    <ServiceContext.Provider value={[addService, setAddService]}>
     <Box width={"100%"}>
       <Box sx={{ m: 3, p: 3 }}>
-        <ServiceFrom fetchData={fetchData} />
+        <ServiceFrom />
       </Box>
 
       <Divider />
 
       <Box sx={{ m: 3, p: 3 }}>
-
-        <ServiceTable/>
-
+        <ServiceTable />
       </Box>
     </Box>
-    </ServiceContext.Provider>
   )
 }
 

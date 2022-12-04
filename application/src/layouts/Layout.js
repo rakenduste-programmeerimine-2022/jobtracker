@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { NavLink, Outlet } from "react-router-dom"
+import { useEffect, useContext, useState } from "react"
+import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import {
   AppBar,
   Box,
@@ -26,19 +26,21 @@ import {
   Work as WorkIcon,
 } from "@mui/icons-material"
 import { v4 as uuid } from "uuid"
+import UserContext from "../contexts/UserContext"
 
 const drawerWidth = 260
 
 const Layout = ({ children, window }) => {
+  const { setUserData, setServiceData } = useContext(UserContext)
   const theme = useTheme()
-
   const mdOnly = useMediaQuery(theme.breakpoints.down("md"))
-
   const [open, setOpen] = useState(() => (mdOnly ? false : true))
 
   const handleDrawerToggle = () => {
     mdOnly && setOpen(!open)
   }
+
+  const navigate = useNavigate()
 
   async function logOutClick() {
     const data = await fetch("http://localhost:8080/auth/signout", {
@@ -48,9 +50,13 @@ const Layout = ({ children, window }) => {
         "Content-Type": "application/json",
       },
     })
-    const json = await data.json()
-
-    console.log(json)
+    const response = await data.json()
+    console.log(response)
+    if (response.message === "You've been signed out!") {
+      setUserData(null)
+      setServiceData(null)
+      navigate("/")
+    }
   }
 
   useEffect(() => {

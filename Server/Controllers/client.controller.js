@@ -1,41 +1,40 @@
 const mongoose = require("mongoose")
 const ObjectId = require("mongodb").ObjectID
 
-const serviceSchema = new mongoose.Schema(
+const clientSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true },
-    code: { type: String, required: true, unique: true },
-    description: { type: String, required: true },
-    unit: { type: String, required: true },
-    price: { type: Number, required: true },
-    tax: {
-      type: Number,
-      enum: [0.0, 9.0, 20.0],
-      default: 20.0,
-    },
+    name: { type: String, required: true, unique: true },
+    regcode: { type: String, required: true, unique: true },
+    vatno: { type: String, unique: true },
+    address: { type: String },
+    term: { type: Number, default: 14.0 },
   },
   { timestamps: true }
 )
 
-const Item = mongoose.model("Service", serviceSchema)
+const Item = mongoose.model("Client", clientSchema)
 
 exports.create = async (req, res) => {
-  const { userId, code, description, unit, price, tax } = req.body
-  //console.log(req.body)
+  const { userId, name, regcode, vatno, address, term } = req.body
 
-  const codeExists = await Item.findOne({ userId: userId, code: code })
-  //console.log(codeExists)
-  if (codeExists) {
-    res.status(499).send("Kood juba võetud")
+  const nameExists = await Item.findOne({ name })
+  const regcodeExists = await Item.findOne({ regcode })
+  const vatnoExists = await Item.findOne({ vatno })
+
+  if (nameExists) {
+    res.status(499).send("Nimi on juba võetud")
+  } else if (regcodeExists) {
+    res.status(498).send("Reg on juba võetud")
+  } else if (vatnoExists) {
+    res.status(497).send("KMKR nr on juba võetud")
   } else {
-    //console.log("tere")
     const item = await Item.create(
-      { userId, code, description, unit, price, tax },
+      { userId, name, regcode, vatno, address, term },
       function (err, result) {
         if (err) {
           res.send(err)
         } else {
-          console.log(result)
           res.send(result)
         }
       }
@@ -44,9 +43,9 @@ exports.create = async (req, res) => {
 }
 
 exports.read = async (req, res) => {
-  let id = req.params?.id
+  /*  let id = req.params?.id
   const userId = req.query?.userId
-  //console.log(req.query)
+  console.log(req.query)
 
   if (id !== undefined) {
     const item = await Item.findOne({ _id: ObjectId(id) })
@@ -55,11 +54,11 @@ exports.read = async (req, res) => {
   } else {
     const items = await Item.find({ userId })
     res.send(items)
-  }
+  } */
 }
 
 exports.update = async (req, res) => {
-  const { userId, code, description, unit, price, tax } = req.body
+  /* const { userId, code, description, unit, price, tax } = req.body
   const { id } = req.params
   console.log(id)
   const filter = { _id: ObjectId(id) }
@@ -93,12 +92,12 @@ exports.update = async (req, res) => {
         }
       }
     )
-  }
+  } */
 }
 
 exports.delete = async (req, res) => {
-  const { id } = req.params
+  /*  const { id } = req.params
   const filter = { _id: id }
   const item = await Item.deleteOne(filter)
-  res.send(item)
+  res.send(item) */
 }

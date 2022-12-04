@@ -1,34 +1,31 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
-import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
-import { useSnackbar, Snackbar } from "../../components/useSnackbar"
+//import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
+//import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
-import { useNavigate, useParams } from "react-router-dom"
-import ServiceContext from "../../Contexts/ServiceContext"
-
+import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
 const ServiceForm = ({ fetchData }) => {
-  const { id } = useParams()
-  const [datatoTransfer, setDataToTransfer] = useContext(ServiceContext)
+  /*   const { id } = useParams() */
+  const { userData, serviceData, setServiceData } = useContext(UserContext)
+  const userId = userData.id
 
   const initialValues = {
-    userId: "algne", //siia tuleb see tekitada
+    userId: userId,
     code: "",
     description: "",
     unit: "",
     price: "",
     tax: "",
   }
-
-  const navigate = useNavigate()
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors }
@@ -60,72 +57,42 @@ const ServiceForm = ({ fetchData }) => {
       return Object.values(temp).every((x) => x === "")
   }
 
-  const { values, errors, setValues, setErrors, handleInputChange, resetForm } =
-    useForm(initialValues, true, validate)
-
-  const fetchDataCall = async ({ api }) => {
-    let apiReturn = await axios
-      .get(api)
-      .then((response) => response.data)
-      .catch(function (error) {
-        console.log(error)
-      })
-    return apiReturn
-  }
-
-  useEffect(() => {
-    if (id !== undefined) {
-      console.log(id)
-      const api = SERVICE_URL + "/" + id
-      console.log(id)
-      const fetchItem = async (api) => {
-        let response = await fetchDataCall({ api: api })
-        const { userId, code, description, unit, price, tax } = response
-        const dbValues = {
-          userId,
-          code,
-          description,
-          unit,
-          price: price.$numberDecimal,
-          tax: tax.$numberDecimal,
-        }
-
-        setValues(dbValues)
-      }
-      fetchItem(api)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(
+    initialValues,
+    true,
+    validate
+  )
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
     if (validate()) {
-      console.log(values)
       handleAddService(values)
     }
   }
 
   const handleAddService = async (newService) => {
-    console.log(newService)
     newService.tax = parseInt(newService.tax)
     newService.price = parseInt(newService.price)
-    console.log(newService)
     try {
-      console.log(newService)
-      await axios.post(SERVICE_URL, newService).then(function(response){console.log(response)})
-      resetForm()
-      fetchData()
-      //õnnestumise teade
-      setSnackbarMessage("Lisamine õnnestus!")
-      showSnackbar()
-      setDataToTransfer(newService);
+      let response = await axios.post(SERVICE_URL, newService)
+      if (response.status === 200) {
+        resetForm()
+
+        //õnnestumise teade SEE EI TÖÖTA
+        //setSnackbarMessage("Lisamine õnnestus!")
+        //showSnackbar()
+        //kasutajakonteksti lisamine
+        let temp = [...serviceData]
+        temp.push(newService)
+        setServiceData(temp)
+      }
     } catch (err) {
       // Handle Error Here
       console.error(err)
       let temp = { ...errors }
 
-      if (err.response.status === 499) {
+      if (err.response?.status === 499) {
         temp.code = "See kood on juba võetud."
       }
       setErrors({
@@ -133,69 +100,6 @@ const ServiceForm = ({ fetchData }) => {
       })
     }
   }
-
-  const handleEdit = (e) => {
-    e.preventDefault()
-
-    if (validate()) {
-      console.log(values)
-      handleEditService(values)
-    }
-  }
-
-  const handleEditService = async (updatedService) => {
-    
-    try {
-      const UPDATE_URL = SERVICE_URL + "/" + id
-      console.log(UPDATE_URL)
-      console.log(updatedService)
-      const response = await axios.put(UPDATE_URL, updatedService)
-      //õnnestumise teade
-      setSnackbarMessage("Muutmine õnnestus!")
-      showSnackbar()
-      console.log(response.data)
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-      let temp = { ...errors }
-
-      if (err.response.status === 499) {
-        temp.code = "See kood on juba võetud."
-        console.log("499")
-      }
-      setErrors({
-        ...temp,
-      })
-    }
-  }
-
-  const handleDelete = (e) => {
-    e.preventDefault()
-    //kontrollida, kas on kasutuses
-    //kinnitus lisada
-    handleDeleteService()
-    navigate("/services")
-  }
-
-  const handleDeleteService = async () => {
-    try {
-      const DELETE_URL = SERVICE_URL + "/" + id
-      const response = await axios.delete(DELETE_URL)
-      console.log(response.data)
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-    }
-  }
-
-  const { dialogOpen, handleDialogOpen, handleDialogClose } = useAlertDialog()
-  const {
-    snackbarOpen,
-    snackbarMessage,
-    setSnackbarMessage,
-    showSnackbar,
-    hideSnackbar,
-  } = useSnackbar()
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -237,7 +141,6 @@ const ServiceForm = ({ fetchData }) => {
             onChange={handleInputChange}
             width="120px"
           />
-
           <DropDownInput
             required
             label="KM"
@@ -249,26 +152,7 @@ const ServiceForm = ({ fetchData }) => {
             options={getTaxRates()}
             width="100px"
           />
-          {id !== undefined ? (
-            <>
-              <Button type="edit" text="Muuda" onClick={handleEdit} />
-              <Button text="kustuta" onClick={handleDialogOpen} />
-              <Snackbar
-                open={snackbarOpen}
-                onClose={hideSnackbar}
-                text={snackbarMessage}
-              />
-              <AlertDialog
-                open={dialogOpen}
-                onClose={handleDialogClose}
-                title="Kustuta teenus"
-                content="Oled kindel, et soovid teenuse kustutada"
-                onDelete={handleDelete}
-              />
-            </>
-          ) : (
-            <Button type="submit" text="Lisa" onClick={handleSubmit} />
-          )}
+          <Button type="submit" text="Lisa" onClick={handleSubmit} />
         </Grid>
       </Grid>
     </Form>
