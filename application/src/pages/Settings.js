@@ -10,7 +10,7 @@ import UserContext from "../contexts/UserContext"
 const USER_URL = "/auth/user/"
 
 const Settings = () => {
-  const { userData, setUserData, serviceData } = useContext(UserContext)
+  const { userData, setUserData } = useContext(UserContext)
   const id = userData.id
   const initialValues = {
     ...userData.user,

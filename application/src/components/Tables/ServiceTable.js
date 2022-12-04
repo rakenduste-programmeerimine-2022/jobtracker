@@ -7,20 +7,15 @@ import {
   DialogActions,
   DialogTitle,
   Input,
-  Select,
   Snackbar,
-  useSnackbar,
 } from "@mui/material"
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, { useContext, useRef, useState } from "react"
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
 import { Dropdown } from "primereact/dropdown"
 import { Toast } from "primereact/toast"
 import { Button as Primebutton } from "primereact/button"
-import { DropDownInput } from "../controls/Input"
-import { useParams } from "react-router-dom"
-import { SettingsPowerRounded } from "@mui/icons-material"
 import MuiAlert from "@mui/material/Alert"
 //import ServiceContext from "../../contexts/ServiceContext"
 import UserContext from "../../contexts/UserContext"
@@ -31,12 +26,9 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 })
 
 function ServiceTable() {
-  const { userData, serviceData, setServiceData } = useContext(UserContext)
-
-  //const [contextData, setcontextData] = useContext(ServiceContext)
+  const { serviceData, setServiceData } = useContext(UserContext)
   const [open, setOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  //const [tableData, setData] = useState([])
   const [deletableData, setDeletableData] = useState()
   const [deleteDataDialog, setDeleteDataDialog] = useState(false)
 
@@ -94,14 +86,14 @@ function ServiceTable() {
   }
 
   const toast = useRef(null)
-
+  /* 
   const columns = [
     { field: "code", header: "Kood" },
     { field: "description", header: "Kirjeldus" },
     { field: "unit", header: "Ühik" },
     { field: "price", header: "Hind" },
     { field: "tax", header: "KM" },
-  ]
+  ] */
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -165,7 +157,7 @@ function ServiceTable() {
   }
 
   const deleteData = () => {
-    let _products = serviceData.filter((val) => val._id !== deletableData._id)
+    //let _products = serviceData.filter((val) => val._id !== deletableData._id)
     handleDeleteService()
     setDeleteDataDialog(false)
     setDeletableData(null)

@@ -9,7 +9,7 @@ const Login = () => {
   const user = { email: "", password: "" }
   const [emailError, setEmailError] = useState("")
   const [passWordError, setPassWordError] = useState("")
-  const { userData, setUserData } = useContext(UserContext)
+  const { setUserData } = useContext(UserContext)
   const navigate = useNavigate()
 
   function handleSubmit() {
