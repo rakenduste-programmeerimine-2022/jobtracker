@@ -9,9 +9,9 @@ const serviceSchema = new mongoose.Schema(
     unit: { type: String, required: true },
     price: { type: Number, required: true },
     tax: {
-      type: String,
-      enum: ["0.0", "9.0", "20.0"],
-      default: "20.0",
+      type: Number,
+      enum: [0.0, 9.0, 20.0],
+      default: 20.0,
     },
   },
   { timestamps: true }
