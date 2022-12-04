@@ -14,6 +14,8 @@ const Services = () => {
   const [addService, setAddService] = useState("")
 
   const { userData, serviceData } = useContext(UserContext)
+
+  //seda vist ei ole vaja
   const fetchData = async () => {
     const response = await axios.get(SERVICE_URL, {
       params: {

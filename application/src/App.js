@@ -18,6 +18,7 @@ function App() {
   const [userData, setUserData] = useState(null)
   const [serviceData, setServiceData] = useState(null)
   const SERVICE_URL = "/api/services/"
+  const CLIENT_URL = "/api/clients/"
 
   useMemo(() => {
     const loadServiceData = async () => {
@@ -34,7 +35,22 @@ function App() {
         }
       }
     }
+    const loadClientData = async () => {
+      if (userData) {
+        try {
+          const response = await axios.get(CLIENT_URL, {
+            params: {
+              userId: userData.id,
+            },
+          })
+          setServiceData(response.data)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
     loadServiceData()
+    //loadClientData()
   }, [userData])
 
   const providerValue = useMemo(

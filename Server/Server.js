@@ -3,6 +3,7 @@ const cors = require("cors")
 const cookieSession = require("cookie-session")
 const dotenv = require("dotenv")
 const serviceRoutes = require("./routes/service.routes")
+const clientRoutes = require("./routes/client.routes")
 
 dotenv.config()
 const app = express()
@@ -50,3 +51,4 @@ db.mongoose
   })
 
 app.use("/api/services", serviceRoutes)
+app.use("/api/clients", clientRoutes)

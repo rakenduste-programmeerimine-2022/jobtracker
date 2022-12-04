@@ -23,6 +23,7 @@ import { useParams } from "react-router-dom"
 import { SettingsPowerRounded } from "@mui/icons-material"
 import MuiAlert from "@mui/material/Alert"
 import ServiceContext from "../../contexts/ServiceContext"
+import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services/"
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -30,6 +31,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 })
 
 function ServiceTable() {
+  const { userData, serviceData, setServiceData } = useContext(UserContext)
+
   const [contextData, setcontextData] = useContext(ServiceContext)
   const [open, setOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -45,7 +48,11 @@ function ServiceTable() {
   )
 
   const fetchData = async () => {
-    const response = await axios.get(SERVICE_URL)
+    const response = await axios.get(SERVICE_URL, {
+      params: {
+        userId: userData.id,
+      },
+    })
     setData(response.data)
   }
 

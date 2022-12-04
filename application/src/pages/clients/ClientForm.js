@@ -1,18 +1,31 @@
-//import { useRef, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+//import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
+//import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
 import { InputField } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
+import axios from "../../api/axios"
+import { useNavigate, useParams } from "react-router-dom"
+import ServiceContext from "../../contexts/ServiceContext"
+import UserContext from "../../contexts/UserContext"
 
-const initialValues = {
-  name: "",
-  regcode: "",
-  vatno: "",
-  address: "",
-  term: "14",
-}
+const CLIENT_URL = "/api/clients/"
 
 const ClientForm = () => {
+  //const { id } = useParams()
+  const { userData } = useContext(UserContext)
+  const userId = userData.id
+
+  const initialValues = {
+    userId: userId,
+    name: "",
+    regcode: "",
+    vatno: "",
+    address: "",
+    term: 14,
+  }
+
   const validate = (fieldValues = values) => {
     let temp = { ...errors }
     if ("name" in fieldValues)
@@ -48,8 +61,45 @@ const ClientForm = () => {
 
     if (validate()) {
       console.log(values)
-      window.alert("Esitatud")
+      handleAddClient(values)
       resetForm()
+    }
+  }
+
+  const handleAddClient = async (newClient) => {
+    console.log(newClient)
+    newClient.term = parseInt(newClient.term)
+    try {
+      console.log(newClient)
+      await axios.post(CLIENT_URL, newClient).then(function (response) {
+        console.log(response)
+      })
+      resetForm()
+      //fetchData()
+      //õnnestumise teade
+      //setSnackbarMessage("Lisamine õnnestus!")
+      //showSnackbar()
+      //setDataToTransfer(newClient)
+    } catch (err) {
+      // Handle Error Here
+      console.error(err)
+      let temp = { ...errors }
+
+      if (err.response.status === 499) {
+        temp.name = "See nimi on juba võetud."
+      }
+
+      if (err.response.status === 498) {
+        temp.regcode = "See registrikood on juba võetud."
+      }
+
+      if (err.response.status === 497) {
+        temp.vatno = "See KMKR nr on juba võetud."
+      }
+
+      setErrors({
+        ...temp,
+      })
     }
   }
 

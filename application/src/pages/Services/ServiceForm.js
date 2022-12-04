@@ -9,6 +9,7 @@ import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
 import { useNavigate, useParams } from "react-router-dom"
 import ServiceContext from "../../contexts/ServiceContext"
+import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
@@ -16,10 +17,12 @@ const SERVICE_URL = "/api/services"
 
 const ServiceForm = ({ fetchData }) => {
   const { id } = useParams()
+  const { userData, serviceData, setServiceData } = useContext(UserContext)
+  const userId = userData.id
   const [datatoTransfer, setDataToTransfer] = useContext(ServiceContext)
 
   const initialValues = {
-    userId: "algne", //siia tuleb see tekitada
+    userId: userId,
     code: "",
     description: "",
     unit: "",
@@ -121,6 +124,10 @@ const ServiceForm = ({ fetchData }) => {
       setSnackbarMessage("Lisamine õnnestus!")
       showSnackbar()
       setDataToTransfer(newService)
+      //kasutajakonteksti lisamine
+      let temp = { ...serviceData }
+      temp.push(newService)
+      setServiceData(temp)
     } catch (err) {
       // Handle Error Here
       console.error(err)
