@@ -59,7 +59,7 @@ function App() {
     [userData, setUserData, serviceData, setServiceData]
   )
 
-  //console.log(userData)
+  console.log(userData)
   //console.log(serviceData)
 
   return (

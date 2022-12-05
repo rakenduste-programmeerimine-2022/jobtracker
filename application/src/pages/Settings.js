@@ -13,6 +13,13 @@ const Settings = () => {
   const { userData, setUserData } = useContext(UserContext)
   const id = userData.id
   const initialValues = {
+    /*     name: 
+    surname:
+    businessName:
+    regNumber:
+    address:
+    iban: */
+
     ...userData.user,
   }
 
