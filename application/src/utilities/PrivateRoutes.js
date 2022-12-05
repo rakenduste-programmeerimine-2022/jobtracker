@@ -1,17 +1,12 @@
-import { useEffect, useState } from "react"
-
+import { useContext, useEffect, useLayoutEffect, useState } from "react"
 import { Outlet, Navigate } from "react-router-dom"
+import UserContext from "../contexts/UserContext"
 
 function PrivateRoutes() {
   const [auth, setAuth] = useState([false])
+  const { userData } = useContext(UserContext)
 
-  /*     useEffect(() => {
-        fetch("http://localhost:8080/auth/tokencheck")
-    .then(response => response.json())
-    .then(data => console.log(data)).then(data => setAuth(data)).then(console.log(auth));
-
-
-    },[]) */
+  console.log(auth)
 
   useEffect(() => {
     async function fetchData() {
@@ -22,20 +17,16 @@ function PrivateRoutes() {
           "Content-Type": "application/json",
         },
       })
-      //console.log(data)
       const json = await data.json()
-
-      //console.log(json)
+      console.log(json.success)
       setAuth(json.success)
-      //console.log(auth)
     }
-
     fetchData()
-  }, [auth])
+    console.log(auth)
+  })
+  //}, [userData])
 
-  //console.log(auth)
-
-  return auth && auth ? <Outlet /> : <Navigate to={"login"} />
+  return auth ? <Outlet /> : <Navigate to={"login"} />
 }
 
 export default PrivateRoutes

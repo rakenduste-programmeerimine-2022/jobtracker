@@ -22,6 +22,8 @@ function App() {
   const CLIENT_URL = "/api/clients/"
 
   useMemo(() => {
+    if (!userData) setUserData(JSON.parse(sessionStorage.getItem("user")))
+
     const loadServiceData = async () => {
       if (userData) {
         try {
@@ -74,7 +76,7 @@ function App() {
               <Route path="/clients" element={<Clients />} />
               <Route path="/services" element={<Services />} />
               {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
-              <Route path="/services/:id" element={<ServiceForm />} />
+              {/* <Route path="/services/:id" element={<ServiceForm />} /> */}
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Route>

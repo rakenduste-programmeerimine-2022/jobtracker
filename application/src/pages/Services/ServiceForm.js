@@ -78,13 +78,14 @@ const ServiceForm = ({ fetchData }) => {
       let response = await axios.post(SERVICE_URL, newService)
       if (response.status === 200) {
         resetForm()
+        console.log(response.data)
 
         //õnnestumise teade SEE EI TÖÖTA
         //setSnackbarMessage("Lisamine õnnestus!")
         //showSnackbar()
         //kasutajakonteksti lisamine
         let temp = [...serviceData]
-        temp.push(newService)
+        temp.push(response.data)
         setServiceData(temp)
       }
     } catch (err) {

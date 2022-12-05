@@ -38,7 +38,6 @@ const Login = () => {
 
   async function postLogin() {
     const json = JSON.stringify(user)
-    console.log(json)
     const requestOptions = {
       credentials: "include",
       method: "POST",
@@ -51,11 +50,11 @@ const Login = () => {
       requestOptions
     )
     const data = await response.json()
-    setUserData(data)
-    // if (data.message !== "User Not found.") {
-    //   window.location.href = "/jobs"
-    // }
-    if (data.message !== "User Not found.") {
+
+    if (response.status === 200) {
+      setUserData(data)
+      sessionStorage.setItem("user", JSON.stringify(data))
+      console.log(data)
       navigate("/")
     }
   }

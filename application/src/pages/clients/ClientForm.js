@@ -14,7 +14,15 @@ const CLIENT_URL = "/api/clients/"
 const ClientForm = () => {
   //const { id } = useParams()
   const { userData } = useContext(UserContext)
-  const userId = userData.id
+
+  let userId = null
+
+  if (userData) {
+    userId = userData.id
+  } else {
+    userId = sessionStorage.getItem("user").id
+  }
+  //const userId = userData.id
 
   const initialValues = {
     userId: userId,

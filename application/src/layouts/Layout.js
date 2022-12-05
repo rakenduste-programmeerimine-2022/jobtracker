@@ -55,7 +55,8 @@ const Layout = ({ children, window }) => {
     if (response.message === "You've been signed out!") {
       setUserData(null)
       setServiceData(null)
-      navigate("/")
+      sessionStorage.removeItem("userId")
+      navigate(0)
     }
   }
 
