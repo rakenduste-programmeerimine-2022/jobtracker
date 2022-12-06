@@ -8,13 +8,69 @@ var jwt = require("jsonwebtoken")
 var bcrypt = require("bcrypt")
 
 exports.signup = (req, res) => {
-  var regNumber = req.body.regNumber
+  // try {
+  //   const user = new User({
+  //     name: req.body.name,
+  //     surname: req.body.surname,
+  //     email: req.body.email,
+  //     password: bcrypt.hashSync(req.body.password, 8),
+  //     businessName: req.body.businessName,
+  //     regNumber: req.body.regNumber,
+  //     /*       address: req.body.address,
+  //     vat: req.body.vat,
+  //     iban: req.body.iban, */
+  //   })
+
+  //   user.save({
+  //     /* name: user.name,
+  //     surname: user.surname,
+  //     email: user.email,
+  //     businessName: user.businessName,
+  //     regNumber: user.regNumber, */
+  //     /*       vat: user.vat,
+  //     address: user.address,
+  //     iban: user.iban, */
+  //   })
+
+  //   console.log(user)
+
+  //   const token = jwt.sign(
+  //     {
+  //       id: user._id,
+  //       name: user.name,
+  //       surname: user.surname,
+  //       email: user.email,
+  //     },
+  //     process.env.SECRET_KEY,
+  //     {
+  //       expiresIn: 2 * 60 * 60 * 1000, // 2 hours
+  //     }
+  //   )
+  //   req.session.token = token
+  //   console.log(req.session.token)
+
+  //   res.status(200).send({
+  //     id: user._id,
+  //     user: {
+  //       name: user.name,
+  //       surname: user.surname,
+  //       email: user.email,
+  //       businessName: user.businessName,
+  //       regNumber: user.regNumber,
+  //       vat: user.vat,
+  //       address: user.address,
+  //       iban: user.iban,
+  //     },
+  //   })
+  // } catch (error) {
+  //   res.status(500).send({ message: error.message })
+  // }
 
   const user = new User({
     name: req.body.name,
     surname: req.body.surname,
     businessName: req.body.businessName,
-    regNumber: regNumber,
+    regNumber: req.body.regNumber,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
     iban: req.body.iban,
@@ -26,8 +82,40 @@ exports.signup = (req, res) => {
       return
     }
 
-    res.send({ message: "User was registered successfully!" })
+    const token = jwt.sign(
+      {
+        id: user._id,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+      },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: 2 * 60 * 60 * 1000, // 2 hours
+      }
+    )
+    req.session.token = token
+
+    //console.log("1: ", req.session.token)
+    //console.log(JSON.stringify(req.headers))
+
+    res.status(200).send({
+      id: user._id,
+      user: {
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        businessName: user.businessName,
+        regNumber: user.regNumber,
+        vat: user.vat,
+        address: user.address,
+        iban: user.iban,
+      },
+    })
+    //console.log("2: ", req.session.token)
   })
+
+  //console.log("3: ", req.session.token)
 }
 
 exports.signin = (req, res) => {
@@ -63,8 +151,7 @@ exports.signin = (req, res) => {
     )
 
     req.session.token = token
-
-    //console.log(req.session.token)
+    //console.log(JSON.stringify(req.headers))
 
     res.status(200).send({
       id: user._id,

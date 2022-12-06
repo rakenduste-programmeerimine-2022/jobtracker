@@ -9,19 +9,20 @@ import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
 import Services from "./pages/services/Services"
-import ServiceForm from "./pages/services/ServiceForm"
 import Settings from "./pages/Settings"
 import PrivateRoutes from "./utilities/PrivateRoutes"
 import UserContext from "./contexts/UserContext"
 
 function App() {
   const [userData, setUserData] = useState(null)
-  const [serviceData, setServiceData] = useState(null)
-  const [clientData, setClientData] = useState(null)
+  const [serviceData, setServiceData] = useState("")
+  const [clientData, setClientData] = useState("")
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
   useMemo(() => {
+    if (!userData) setUserData(JSON.parse(sessionStorage.getItem("user")))
+
     const loadServiceData = async () => {
       if (userData) {
         try {
@@ -36,7 +37,7 @@ function App() {
         }
       }
     }
-    /*   const loadClientData = async () => {
+    const loadClientData = async () => {
       if (userData) {
         try {
           const response = await axios.get(CLIENT_URL, {
@@ -49,18 +50,26 @@ function App() {
           console.log(error)
         }
       }
-    } */
+    }
     loadServiceData()
-    //loadClientData()
+    loadClientData()
   }, [userData])
 
-  const providerValue = useMemo(
-    () => ({ userData, setUserData, serviceData, setServiceData }),
-    [userData, setUserData, serviceData, setServiceData]
-  )
+  //console.log("Kasutaja: ", userData)
+  //console.log("Teenused: ", serviceData)
+  //console.log("Kliendid: ", clientData)
 
-  //console.log(userData)
-  //console.log(serviceData)
+  const providerValue = useMemo(
+    () => ({
+      userData,
+      setUserData,
+      serviceData,
+      setServiceData,
+      clientData,
+      setClientData,
+    }),
+    [userData, serviceData, clientData]
+  )
 
   return (
     <BrowserRouter>
@@ -73,8 +82,6 @@ function App() {
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/services" element={<Services />} />
-              {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
-              <Route path="/services/:id" element={<ServiceForm />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Route>

@@ -11,8 +11,19 @@ const USER_URL = "/auth/user/"
 
 const Settings = () => {
   const { userData, setUserData } = useContext(UserContext)
+
   const id = userData.id
+
+  console.log(userData)
+
   const initialValues = {
+    /*     name: 
+    surname:
+    businessName:
+    regNumber:
+    address:
+    iban: */
+
     ...userData.user,
   }
 

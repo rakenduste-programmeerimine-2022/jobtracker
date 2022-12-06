@@ -13,19 +13,18 @@ import React, { useContext, useRef, useState } from "react"
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
-import { Dropdown } from "primereact/dropdown"
 import { Toast } from "primereact/toast"
 import { Button as Primebutton } from "primereact/button"
 import MuiAlert from "@mui/material/Alert"
 import UserContext from "../../contexts/UserContext"
 
-const SERVICE_URL = "/api/services/"
+const CLIENT_URL = "/api/clients/"
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
-function ServiceTable() {
-  const { serviceData, setServiceData } = useContext(UserContext)
+function ClientTable() {
+  const { clientData, setClientData } = useContext(UserContext)
   const [open, setOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deletableData, setDeletableData] = useState()
@@ -48,19 +47,18 @@ function ServiceTable() {
     setDeleteDataDialog(false)
   }
 
-  const handleEditService = async (updatedService) => {
+  const handleEditClient = async (updatedClient) => {
     try {
-      const UPDATE_URL = SERVICE_URL + updatedService.newData._id
-      const response = await axios.put(UPDATE_URL, updatedService.newData)
+      const UPDATE_URL = CLIENT_URL + updatedClient.newData._id
+      const response = await axios.put(UPDATE_URL, updatedClient.newData)
       //kasutajakonteksti lisamine
       if (response.status === 200) {
-        let temp = [...serviceData]
+        let temp = [...clientData]
         let index = temp.findIndex(
-          (element) => element._id === updatedService.newData._id
+          (element) => element._id === updatedClient.newData._id
         )
-        //temp[index] = updatedService.newData
-        temp[index] = response.data
-        setServiceData(temp)
+        temp[index] = updatedClient.newData
+        setClientData(temp)
       }
       //õnnestumise teade
       setOpen(true)
@@ -70,14 +68,14 @@ function ServiceTable() {
     }
   }
 
-  const handleDeleteService = async () => {
+  const handleDeleteClient = async () => {
     try {
-      const DELETE_URL = SERVICE_URL + deletableData._id
+      const DELETE_URL = CLIENT_URL + deletableData._id
       const response = await axios.delete(DELETE_URL)
       if (response.status === 200) {
-        let temp = [...serviceData]
-        temp = temp.filter((service) => service._id !== deletableData._id)
-        setServiceData(temp)
+        let temp = [...clientData]
+        temp = temp.filter((client) => client._id !== deletableData._id)
+        setClientData(temp)
       }
     } catch (err) {
       // Handle Error Here
@@ -87,40 +85,18 @@ function ServiceTable() {
 
   const toast = useRef(null)
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 0.0:
-        return "0%"
-
-      case 9.0:
-        return "9%"
-
-      case 20.0:
-        return "20%"
-
-      default:
-        return "NA"
-    }
-  }
-
-  const statuses = [
-    { label: "0%", value: 0.0 },
-    { label: "9%", value: 9.0 },
-    { label: "20%", value: 20.0 },
-  ]
-
-  const onRowEditComplete = (e) => {
-    let temp = [...serviceData]
+  const onRowEditComplete1 = (e) => {
+    let temp = [...clientData]
     let { newData, index } = e
 
     temp[index] = newData
 
-    handleEditService(e)
+    handleEditClient(e)
   }
 
   const deleteData = () => {
-    //let _products = serviceData.filter((val) => val._id !== deletableData._id)
-    handleDeleteService()
+    //let _products = ClientData.filter((val) => val._id !== deletableData._id)
+    handleDeleteClient()
     setDeleteDataDialog(false)
     setDeletableData(null)
     setDeleteOpen(true)
@@ -143,10 +119,6 @@ function ServiceTable() {
     setDeleteDataDialog(true)
   }
 
-  const statusBodyTemplate = (rowData) => {
-    return getStatusLabel(rowData.tax)
-  }
-
   const textEditor = (options) => {
     return (
       <Input
@@ -157,27 +129,7 @@ function ServiceTable() {
     )
   }
 
-  const taxEditor = (options) => {
-    return (
-      <Dropdown
-        value={options.value}
-        options={statuses}
-        optionLabel="label"
-        optionValue="value"
-        onChange={(e) => options.editorCallback(e.value)}
-        //placeholder="Vali KM"
-        itemTemplate={(option) => {
-          return (
-            <span className={`product-badge status-${option.value}`}>
-              {option.label}
-            </span>
-          )
-        }}
-      />
-    )
-  }
-
-  const priceEditor = (options) => {
+  const numEditor = (options) => {
     return (
       <Input
         type="number"
@@ -185,13 +137,6 @@ function ServiceTable() {
         onChange={(e) => options.editorCallback(e.target.value)}
       />
     )
-  }
-
-  const priceBodyTemplate = (rowData) => {
-    return new Intl.NumberFormat("en-EU", {
-      style: "currency",
-      currency: "EUR",
-    }).format(rowData.price)
   }
 
   return (
@@ -210,7 +155,7 @@ function ServiceTable() {
       <Toast ref={toast} />
       <div className="card p-fluid">
         <DataTable
-          value={serviceData}
+          value={clientData}
           paginator
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Näitan {first} kuni {last} rida {totalRecords}-st"
@@ -218,7 +163,7 @@ function ServiceTable() {
           rowsPerPageOptions={[10, 20, 50]}
           paginatorLeft={paginatorLeft}
           paginatorRight={paginatorRight}
-          sortField="code"
+          sortField="name"
           sortOrder={1}
           resizableColumns
           editMode="row"
@@ -226,48 +171,47 @@ function ServiceTable() {
           dataKey="id"
           showGridlines
           stripedRows
-          onRowEditComplete={onRowEditComplete}
+          onRowEditComplete={onRowEditComplete1}
           responsiveLayout="scroll"
         >
           <Column
-            field="code"
-            header="Kood"
+            field="name"
+            header="Nimi"
             sortable
             editor={(options) => textEditor(options)}
             style={{ width: "15%" }}
             resizeable={false}
           ></Column>
           <Column
-            field="description"
+            field="regcode"
             sortable
-            header="Kirjeldus"
+            header="Registrikood"
             editor={(options) => textEditor(options)}
             style={{ width: "45%" }}
             resizeable={false}
           ></Column>
           <Column
-            field="unit"
-            header="Ühik"
+            field="vatno"
+            header="KMKR nr"
             sortable
             editor={(options) => textEditor(options)}
             style={{ width: "15%" }}
             resizeable={false}
           ></Column>
           <Column
-            field="price"
-            header="Hind"
+            field="address"
+            header="Aadress"
             sortable
-            body={priceBodyTemplate}
-            editor={(options) => priceEditor(options)}
+            //body={priceBodyTemplate}
+            editor={(options) => textEditor(options)}
             style={{ width: "15%" }}
             resizeable={false}
           ></Column>
           <Column
-            field="tax"
-            header="KM"
+            field="term"
+            header="Tähtaeg"
             sortable
-            body={statusBodyTemplate}
-            editor={(options) => taxEditor(options)}
+            editor={(options) => numEditor(options)}
             style={{ width: "10%" }}
             resizeable={false}
           ></Column>
@@ -292,14 +236,14 @@ function ServiceTable() {
       >
         <DialogTitle>{"Olete kindel, et soovite rea kustutada?"}</DialogTitle>
         <DialogActions>
-          <Button onClick={handleClose}>EI</Button>
           <Button onClick={deleteData} autoFocus>
             JAH
           </Button>
+          <Button onClick={handleClose}>EI</Button>
         </DialogActions>
       </Dialog>
     </div>
   )
 }
 
-export default ServiceTable
+export default ClientTable

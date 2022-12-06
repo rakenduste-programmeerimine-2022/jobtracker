@@ -1,8 +1,7 @@
 import { useContext } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
-//import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
-//import { useSnackbar, Snackbar } from "../../components/useSnackbar"
+import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
@@ -11,11 +10,17 @@ import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
-//https://www.youtube.com/watch?v=-XKaSCU0ZLM
+const ServiceForm = () => {
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
 
-const ServiceForm = ({ fetchData }) => {
-  /*   const { id } = useParams() */
   const { userData, serviceData, setServiceData } = useContext(UserContext)
+
   const userId = userData.id
 
   const initialValues = {
@@ -78,13 +83,14 @@ const ServiceForm = ({ fetchData }) => {
       let response = await axios.post(SERVICE_URL, newService)
       if (response.status === 200) {
         resetForm()
+        console.log(response.data)
 
-        //õnnestumise teade SEE EI TÖÖTA
-        //setSnackbarMessage("Lisamine õnnestus!")
-        //showSnackbar()
+        //õnnestumise teade
+        setSnackbarMessage("Lisamine õnnestus!")
+        showSnackbar()
         //kasutajakonteksti lisamine
         let temp = [...serviceData]
-        temp.push(newService)
+        temp.push(response.data)
         setServiceData(temp)
       }
     } catch (err) {
@@ -155,6 +161,11 @@ const ServiceForm = ({ fetchData }) => {
           <Button type="submit" text="Lisa" onClick={handleSubmit} />
         </Grid>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={hideSnackbar}
+        text={snackbarMessage}
+      />
     </Form>
   )
 }
