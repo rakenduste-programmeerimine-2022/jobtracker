@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Outlet, Navigate } from "react-router-dom"
 import UserContext from "../contexts/UserContext"
 
@@ -23,8 +23,8 @@ function PrivateRoutes() {
     }
     fetchData()
     //console.log(auth)
-  })
-  //}, [userData])
+    //})
+  }, [userData])
 
   return auth ? <Outlet /> : <Navigate to={"login"} />
 }

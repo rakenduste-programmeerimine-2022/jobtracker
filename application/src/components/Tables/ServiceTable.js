@@ -17,7 +17,6 @@ import { Dropdown } from "primereact/dropdown"
 import { Toast } from "primereact/toast"
 import { Button as Primebutton } from "primereact/button"
 import MuiAlert from "@mui/material/Alert"
-//import ServiceContext from "../../contexts/ServiceContext"
 import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services/"

@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
 import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import axios from "../../api/axios"
-import { useNavigate, useParams } from "react-router-dom"
 import UserContext from "../../contexts/UserContext"
 
 const CLIENT_URL = "/api/clients/"

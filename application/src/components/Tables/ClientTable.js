@@ -13,7 +13,6 @@ import React, { useContext, useRef, useState } from "react"
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
-import { Dropdown } from "primereact/dropdown"
 import { Toast } from "primereact/toast"
 import { Button as Primebutton } from "primereact/button"
 import MuiAlert from "@mui/material/Alert"
@@ -87,36 +86,6 @@ function ClientTable() {
   }
 
   const toast = useRef(null)
-  /* 
-  const columns = [
-    { field: "code", header: "Kood" },
-    { field: "description", header: "Kirjeldus" },
-    { field: "unit", header: "Ühik" },
-    { field: "price", header: "Hind" },
-    { field: "tax", header: "KM" },
-  ] */
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 0.0:
-        return "0%"
-
-      case 9.0:
-        return "9%"
-
-      case 20.0:
-        return "20%"
-
-      default:
-        return "NA"
-    }
-  }
-
-  const statuses = [
-    { label: "0%", value: 0.0 },
-    { label: "9%", value: 9.0 },
-    { label: "20%", value: 20.0 },
-  ]
 
   const onRowEditComplete1 = (e) => {
     let temp = [...clientData]
@@ -125,36 +94,6 @@ function ClientTable() {
     temp[index] = newData
 
     handleEditClient(e)
-  }
-
-  const textEditor = (options) => {
-    return (
-      <Input
-        type="text"
-        value={options.value}
-        onChange={(e) => options.editorCallback(e.target.value)}
-      />
-    )
-  }
-
-  const taxEditor = (options) => {
-    return (
-      <Dropdown
-        value={options.value}
-        options={statuses}
-        optionLabel="label"
-        optionValue="value"
-        onChange={(e) => options.editorCallback(e.value)}
-        placeholder="Vali KM"
-        itemTemplate={(option) => {
-          return (
-            <span className={`product-badge status-${option.value}`}>
-              {option.label}
-            </span>
-          )
-        }}
-      />
-    )
   }
 
   const deleteData = () => {
@@ -182,28 +121,24 @@ function ClientTable() {
     setDeleteDataDialog(true)
   }
 
-  const statusBodyTemplate = (rowData) => {
-    return getStatusLabel(rowData.tax)
-  }
-
-  const priceEditor = (options) => {
+  const textEditor = (options) => {
     return (
       <Input
-        type="number"
+        type="text"
         value={options.value}
-        onChange={(e) => options.editorCallback(e.value)}
-        mode="currency"
-        currency="USD"
-        locale="en-US"
+        onChange={(e) => options.editorCallback(e.target.value)}
       />
     )
   }
 
-  const priceBodyTemplate = (rowData) => {
-    return new Intl.NumberFormat("en-EU", {
-      style: "currency",
-      currency: "EUR",
-    }).format(rowData.price)
+  const numEditor = (options) => {
+    return (
+      <Input
+        type="number"
+        value={options.value}
+        onChange={(e) => options.editorCallback(e.target.value)}
+      />
+    )
   }
 
   return (
@@ -230,7 +165,7 @@ function ClientTable() {
           rowsPerPageOptions={[10, 20, 50]}
           paginatorLeft={paginatorLeft}
           paginatorRight={paginatorRight}
-          sortField="code"
+          sortField="name"
           sortOrder={1}
           resizableColumns
           editMode="row"
@@ -278,9 +213,7 @@ function ClientTable() {
             field="term"
             header="Tähtaeg"
             sortable
-            //body={statusBodyTemplate}
-            //editor={(options) => termEditor(options)}
-            editor={(options) => textEditor(options)}
+            editor={(options) => numEditor(options)}
             style={{ width: "10%" }}
             resizeable={false}
           ></Column>
