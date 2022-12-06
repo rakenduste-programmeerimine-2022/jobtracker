@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react"
-//import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
-//import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
+import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import axios from "../../api/axios"
@@ -12,17 +11,17 @@ import UserContext from "../../contexts/UserContext"
 const CLIENT_URL = "/api/clients/"
 
 const ClientForm = () => {
-  //const { id } = useParams()
-  const { userData } = useContext(UserContext)
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
 
-  let userId = null
+  const { userData, clientData, setClientData } = useContext(UserContext)
 
-  if (userData) {
-    userId = userData.id
-  } else {
-    userId = sessionStorage.getItem("user").id
-  }
-  //const userId = userData.id
+  const userId = userData.id
 
   const initialValues = {
     userId: userId,
@@ -38,9 +37,9 @@ const ClientForm = () => {
     if ("name" in fieldValues)
       temp.name = fieldValues.name.length > 0 ? "" : "Palun täida see väli."
     if ("regcode" in fieldValues)
-      temp.regcode = /^[0-9]{8}$/.test(fieldValues.regcode)
-        ? ""
-        : "Palun sisesta kehtiv registrikood."
+      //temp.regcode = /^[0-9]{8}$/.test(fieldValues.regcode)
+      temp.regcode =
+        fieldValues.regcode.length > 0 ? "" : "Palun sisesta registrikood."
     if ("vatno" in fieldValues)
       temp.vatno = /^$|^([A-Z]{2})+([0-9]{8,9})$/.test(fieldValues.vatno)
         ? ""
@@ -67,9 +66,8 @@ const ClientForm = () => {
     e.preventDefault()
 
     if (validate()) {
-      console.log(values)
       handleAddClient(values)
-      resetForm()
+      console.log(values)
     }
   }
 
@@ -77,30 +75,33 @@ const ClientForm = () => {
     console.log(newClient)
     newClient.term = parseInt(newClient.term)
     try {
-      console.log(newClient)
-      await axios.post(CLIENT_URL, newClient).then(function (response) {
+      let response = await axios.post(CLIENT_URL, newClient)
+      if (response.status === 200) {
+        resetForm()
         console.log(response)
-      })
-      resetForm()
-      //fetchData()
-      //õnnestumise teade
-      //setSnackbarMessage("Lisamine õnnestus!")
-      //showSnackbar()
-      //setDataToTransfer(newClient)
+
+        //õnnestumise teade
+        setSnackbarMessage("Lisamine õnnestus!")
+        showSnackbar()
+        //kasutajakonteksti lisamine
+        let temp = [...clientData]
+        temp.push(response.data)
+        setClientData(temp)
+      }
     } catch (err) {
       // Handle Error Here
       console.error(err)
       let temp = { ...errors }
 
-      if (err.response.status === 499) {
+      if (err.response?.status === 499) {
         temp.name = "See nimi on juba võetud."
       }
 
-      if (err.response.status === 498) {
+      if (err.response?.status === 498) {
         temp.regcode = "See registrikood on juba võetud."
       }
 
-      if (err.response.status === 497) {
+      if (err.response?.status === 497) {
         temp.vatno = "See KMKR nr on juba võetud."
       }
 
@@ -121,6 +122,7 @@ const ClientForm = () => {
             value={values.name}
             error={errors.name}
             onChange={handleInputChange}
+            width="200px"
           />
           <InputField
             required
@@ -129,7 +131,7 @@ const ClientForm = () => {
             value={values.regcode}
             error={errors.regcode}
             onChange={handleInputChange}
-            width="100px"
+            width="200px"
           />
           <InputField
             label="KMKR nr"
@@ -137,7 +139,7 @@ const ClientForm = () => {
             value={values.vatno}
             error={errors.vatno}
             onChange={handleInputChange}
-            width="100px"
+            width="200px"
           />
           <InputField
             label="Aadress"
@@ -145,6 +147,7 @@ const ClientForm = () => {
             value={values.address}
             error={errors.address}
             onChange={handleInputChange}
+            width="200px"
           />
           <InputField
             required
@@ -158,6 +161,11 @@ const ClientForm = () => {
           <Button type="submit" text="Lisa klient" onClick={handleSubmit} />
         </Grid>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={hideSnackbar}
+        text={snackbarMessage}
+      />
     </Form>
   )
 }

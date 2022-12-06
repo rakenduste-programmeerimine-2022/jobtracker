@@ -4,7 +4,7 @@ const ObjectId = require("mongodb").ObjectID
 const serviceSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true },
-    code: { type: String, required: true, unique: true },
+    code: { type: String, required: true },
     description: { type: String, required: true },
     unit: { type: String, required: true },
     price: { type: Number, required: true },
@@ -21,14 +21,11 @@ const Item = mongoose.model("Service", serviceSchema)
 
 exports.create = async (req, res) => {
   const { userId, code, description, unit, price, tax } = req.body
-  //console.log(req.body)
 
   const codeExists = await Item.findOne({ userId: userId, code: code })
-  //console.log(codeExists)
   if (codeExists) {
     res.status(499).send("Kood juba võetud")
   } else {
-    //console.log("tere")
     const item = await Item.create(
       { userId, code, description, unit, price, tax },
       function (err, result) {
@@ -44,7 +41,11 @@ exports.create = async (req, res) => {
 }
 
 exports.read = async (req, res) => {
-  let id = req.params?.id
+  const userId = req.query?.userId
+  console.log(req.query)
+  const items = await Item.find({ userId })
+  res.send(items)
+  /*   let id = req.params?.id
   const userId = req.query?.userId
   //console.log(req.query)
 
@@ -55,7 +56,7 @@ exports.read = async (req, res) => {
   } else {
     const items = await Item.find({ userId })
     res.send(items)
-  }
+  }*/
 }
 
 exports.update = async (req, res) => {

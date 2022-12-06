@@ -96,8 +96,8 @@ exports.signup = (req, res) => {
     )
     req.session.token = token
 
-    console.log("1: ", req.session.token)
-    console.log(JSON.stringify(req.headers))
+    //console.log("1: ", req.session.token)
+    //console.log(JSON.stringify(req.headers))
 
     res.status(200).send({
       id: user._id,
@@ -171,7 +171,7 @@ exports.signin = (req, res) => {
 
 exports.tokencheck = async (req, res) => {
   let token = req.session.token
-  console.log(token)
+  //console.log(token)
   try {
     if (!token) {
       return res.status(200).send({ success: false })

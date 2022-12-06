@@ -98,7 +98,7 @@ const Register = () => {
   }
 
   async function postSignup() {
-    const json = JSON.stringify(user)
+    //const json = JSON.stringify(user)
     const requestOptions = {
       credentials: "include",
       method: "POST",

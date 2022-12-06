@@ -37,7 +37,7 @@ const Login = () => {
   }
 
   async function postLogin() {
-    const json = JSON.stringify(user)
+    //const json = JSON.stringify(user)
     const requestOptions = {
       credentials: "include",
       method: "POST",

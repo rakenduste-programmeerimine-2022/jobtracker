@@ -6,7 +6,7 @@ function PrivateRoutes() {
   const [auth, setAuth] = useState([false])
   const { userData } = useContext(UserContext)
 
-  console.log(auth)
+  //console.log(auth)
 
   useEffect(() => {
     async function fetchData() {
@@ -18,11 +18,11 @@ function PrivateRoutes() {
         },
       })
       const json = await data.json()
-      console.log(json.success)
+      //console.log(json.success)
       setAuth(json.success)
     }
     fetchData()
-    console.log(auth)
+    //console.log(auth)
   })
   //}, [userData])
 
