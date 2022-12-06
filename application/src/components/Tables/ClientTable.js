@@ -30,8 +30,6 @@ function ClientTable() {
   const [deletableData, setDeletableData] = useState()
   const [deleteDataDialog, setDeleteDataDialog] = useState(false)
 
-  console.log(clientData)
-
   const paginatorLeft = (
     <Button type="button" icon="pi pi-refresh" className="p-button-text" />
   )

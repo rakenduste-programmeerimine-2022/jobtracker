@@ -55,8 +55,9 @@ function App() {
     loadClientData()
   }, [userData])
 
-  console.log(serviceData)
-  console.log(clientData)
+  //console.log("Kasutaja: ", userData)
+  //console.log("Teenused: ", serviceData)
+  //console.log("Kliendid: ", clientData)
 
   const providerValue = useMemo(
     () => ({
@@ -69,9 +70,6 @@ function App() {
     }),
     [userData, serviceData, clientData]
   )
-
-  console.log(userData)
-  //console.log(serviceData)
 
   return (
     <BrowserRouter>
