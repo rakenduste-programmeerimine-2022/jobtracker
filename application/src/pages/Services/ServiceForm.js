@@ -77,8 +77,8 @@ const ServiceForm = () => {
   }
 
   const handleAddService = async (newService) => {
-    newService.tax = parseInt(newService.tax)
-    newService.price = parseInt(newService.price)
+    //newService.tax = parseInt(newService.tax)
+    //newService.price = parseInt(newService.price)
     try {
       let response = await axios.post(SERVICE_URL, newService)
       if (response.status === 200) {

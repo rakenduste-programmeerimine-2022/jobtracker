@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const ObjectId = require("mongodb").ObjectID
 
 const serviceSchema = new mongoose.Schema(
   {
@@ -42,28 +41,15 @@ exports.create = async (req, res) => {
 
 exports.read = async (req, res) => {
   const userId = req.query?.userId
-  console.log(req.query)
   const items = await Item.find({ userId })
   res.send(items)
-  /*   let id = req.params?.id
-  const userId = req.query?.userId
-  //console.log(req.query)
-
-  if (id !== undefined) {
-    const item = await Item.findOne({ _id: ObjectId(id) })
-    console.log(item)
-    res.send(item)
-  } else {
-    const items = await Item.find({ userId })
-    res.send(items)
-  }*/
 }
 
 exports.update = async (req, res) => {
   const { userId, code, description, unit, price, tax } = req.body
   const { id } = req.params
   console.log(id)
-  const filter = { _id: ObjectId(id) }
+  const filter = { _id: id }
   const update = { userId, code, description, unit, price, tax }
 
   const codeExists = await Item.findOne({ code })

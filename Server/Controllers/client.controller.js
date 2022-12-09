@@ -49,7 +49,6 @@ exports.create = async (req, res) => {
 
 exports.read = async (req, res) => {
   const userId = req.query?.userId
-  console.log(req.query)
   const items = await Item.find({ userId })
   res.send(items)
 }
@@ -57,8 +56,7 @@ exports.read = async (req, res) => {
 exports.update = async (req, res) => {
   const { name, regcode, vatno, address, term } = req.body
   const { id } = req.params
-  console.log(id)
-  const filter = { _id: ObjectId(id) }
+  const filter = { _id: id }
   const update = { name, regcode, vatno, address, term }
 
   const codeExists = await Item.findOne({ regcode })

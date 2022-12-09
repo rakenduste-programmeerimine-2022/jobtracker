@@ -22,7 +22,7 @@ const initialValues = {
   tax: "",
   total: "",
   dueDate: "",
-  status: "töös",
+  //status: "töös",
   // date: Date(),
 }
 
@@ -86,7 +86,7 @@ const JobForm = () => {
             onChange={handleInputChange}
             options={getClients()}
           />
-          <DropDownInput
+          {/*           <DropDownInput
             required
             label="Teenus"
             name="service"
@@ -94,7 +94,7 @@ const JobForm = () => {
             error={errors.service}
             onChange={handleInputChange}
             options={getServices()}
-          />
+          /> */}
           <InputField
             required
             label="Kirjeldus"
@@ -155,7 +155,7 @@ const JobForm = () => {
             error={errors.dueDate}
             onChange={handleInputChange}
           />
-          <DropDownInput
+          {/*           <DropDownInput
             required
             label="Olek"
             name="status"
@@ -163,7 +163,7 @@ const JobForm = () => {
             error={errors.status}
             onChange={handleInputChange}
             options={getStatuses()}
-          />
+          /> */}
           <Button type="submit" text="Lisa töö" onClick={handleSubmit} />
         </Grid>
       </Grid>

@@ -8,64 +8,6 @@ var jwt = require("jsonwebtoken")
 var bcrypt = require("bcrypt")
 
 exports.signup = (req, res) => {
-  // try {
-  //   const user = new User({
-  //     name: req.body.name,
-  //     surname: req.body.surname,
-  //     email: req.body.email,
-  //     password: bcrypt.hashSync(req.body.password, 8),
-  //     businessName: req.body.businessName,
-  //     regNumber: req.body.regNumber,
-  //     /*       address: req.body.address,
-  //     vat: req.body.vat,
-  //     iban: req.body.iban, */
-  //   })
-
-  //   user.save({
-  //     /* name: user.name,
-  //     surname: user.surname,
-  //     email: user.email,
-  //     businessName: user.businessName,
-  //     regNumber: user.regNumber, */
-  //     /*       vat: user.vat,
-  //     address: user.address,
-  //     iban: user.iban, */
-  //   })
-
-  //   console.log(user)
-
-  //   const token = jwt.sign(
-  //     {
-  //       id: user._id,
-  //       name: user.name,
-  //       surname: user.surname,
-  //       email: user.email,
-  //     },
-  //     process.env.SECRET_KEY,
-  //     {
-  //       expiresIn: 2 * 60 * 60 * 1000, // 2 hours
-  //     }
-  //   )
-  //   req.session.token = token
-  //   console.log(req.session.token)
-
-  //   res.status(200).send({
-  //     id: user._id,
-  //     user: {
-  //       name: user.name,
-  //       surname: user.surname,
-  //       email: user.email,
-  //       businessName: user.businessName,
-  //       regNumber: user.regNumber,
-  //       vat: user.vat,
-  //       address: user.address,
-  //       iban: user.iban,
-  //     },
-  //   })
-  // } catch (error) {
-  //   res.status(500).send({ message: error.message })
-  // }
-
   const user = new User({
     name: req.body.name,
     surname: req.body.surname,
@@ -76,9 +18,11 @@ exports.signup = (req, res) => {
     iban: req.body.iban,
   })
 
+  console.log(user.password)
+
   user.save((err) => {
     if (err) {
-      res.status(500).send({ message: err })
+      res.send({ message: err })
       return
     }
 
@@ -186,7 +130,7 @@ exports.tokencheck = async (req, res) => {
 exports.signout = async (req, res) => {
   try {
     req.session = null
-    return res.status(200).send({ message: "You've been signed out!" })
+    return res.status(200).send({ success: true })
   } catch (err) {
     this.next(err)
   }

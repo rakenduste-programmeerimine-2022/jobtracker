@@ -24,12 +24,13 @@ const Register = () => {
   const [emailError, setEmailError] = useState("")
   const [passWordError, setPassWordError] = useState("")
   const [passwordMatchError, setPasswordMatchError] = useState("")
-  const { setUserData } = useContext(UserContext)
-  const navigate = useNavigate()
+  const { setLoggedIn, setUserData } = useContext(UserContext)
 
   function handleSubmit() {
+    let hasError = false
     if (nameRef.current.value === "") {
       setNameError("Palun sisesta nimi")
+      hasError = true
     } else {
       user.name = nameRef.current.value
       setNameError("")
@@ -37,6 +38,7 @@ const Register = () => {
 
     if (surNameRef.current.value === "") {
       setSurnameError("Palun sisesta perekonnanimi")
+      hasError = true
     } else {
       user.surname = surNameRef.current.value
       setSurnameError("")
@@ -44,6 +46,7 @@ const Register = () => {
 
     if (!isValidEmail(emailRef.current.value)) {
       setEmailError("Palun sisesta korrektne e-mail")
+      hasError = true
     } else {
       user.email = emailRef.current.value
       setEmailError("")
@@ -53,35 +56,23 @@ const Register = () => {
       setPassWordError(
         "Salasõna peab sisaldama vähemalt ühte numbrit ja suurt tähte ning olema vähemalt 8 tähemärki"
       )
+      hasError = true
     } else {
       user.password = passwordRef.current.value
       setPassWordError("")
     }
 
-    //console.log(passwordRef.current.value === passwordCheckRef.current.value)
-
     if (passwordRef.current.value !== passwordCheckRef.current.value) {
-      //console.log("olensiin")
       setPasswordMatchError("Salasõna ei kattu salasõna kontrolliga")
+      hasError = true
     } else {
-      //console.log("olensiinka")
       setPasswordMatchError("")
     }
 
     user.businessName = businessNameRef.current.value
     user.regNumber = registerNoRef.current.value
 
-    //console.log(user)
-
-    if (
-      nameError === "" &&
-      surnameError === "" &&
-      emailError === "" &&
-      passWordError === "" &&
-      passwordMatchError === ""
-    ) {
-      postSignup()
-    }
+    if (!hasError) postSignup()
   }
 
   function isValidEmail(email) {
@@ -98,7 +89,6 @@ const Register = () => {
   }
 
   async function postSignup() {
-    //const json = JSON.stringify(user)
     const requestOptions = {
       credentials: "include",
       method: "POST",
@@ -112,11 +102,15 @@ const Register = () => {
     )
     const data = await response.json()
 
+    if (response.status === 400) {
+      setEmailError("See e-posti aadress on juba võetud")
+    }
+
     if (response.status === 200) {
-      setUserData(data)
-      sessionStorage.setItem("user", JSON.stringify(data))
-      console.log(data)
-      navigate("/")
+      let temp = { ...data, loggedIn: true }
+      setUserData(temp)
+      sessionStorage.setItem("user", JSON.stringify(temp))
+      setLoggedIn(true)
     }
   }
 

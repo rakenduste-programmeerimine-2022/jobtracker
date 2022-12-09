@@ -1,6 +1,6 @@
-import { useContext, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 import UserContext from "../contexts/UserContext"
 
 const Login = () => {
@@ -9,12 +9,13 @@ const Login = () => {
   const user = { email: "", password: "" }
   const [emailError, setEmailError] = useState("")
   const [passWordError, setPassWordError] = useState("")
-  const { setUserData } = useContext(UserContext)
-  const navigate = useNavigate()
+  const { loggedIn, setLoggedIn, setUserData } = useContext(UserContext)
 
   function handleSubmit() {
+    let hasError = false
     if (!isValidEmail(emailRef.current.value)) {
       setEmailError("Palun sisesta korrektne e-mail")
+      hasError = true
     } else {
       user.email = emailRef.current.value
       setEmailError("")
@@ -22,12 +23,13 @@ const Login = () => {
 
     if (passwordRef.current.value === "") {
       setPassWordError("Palun sisesta salasõna")
+      hasError = true
     } else {
       user.password = passwordRef.current.value
       setPassWordError("")
     }
 
-    if (emailError === "") {
+    if (!hasError) {
       postLogin()
     }
   }
@@ -51,11 +53,14 @@ const Login = () => {
     )
     const data = await response.json()
 
+    if (response.status === 401 || response.status === 404)
+      setPassWordError("Vale salasõna või kasutajatunnus")
+
     if (response.status === 200) {
-      setUserData(data)
-      sessionStorage.setItem("user", JSON.stringify(data))
-      console.log(data)
-      navigate("/")
+      let temp = { ...data, loggedIn: true }
+      setUserData(temp)
+      sessionStorage.setItem("user", JSON.stringify(temp))
+      setLoggedIn(true)
     }
   }
 
