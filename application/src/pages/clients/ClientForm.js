@@ -71,14 +71,11 @@ const ClientForm = () => {
   }
 
   const handleAddClient = async (newClient) => {
-    console.log(newClient)
     newClient.term = parseInt(newClient.term)
-    try {
-      let response = await axios.post(CLIENT_URL, newClient)
-      if (response.status === 200) {
+    axios
+      .post(CLIENT_URL, newClient)
+      .then((response) => {
         resetForm()
-        console.log(response)
-
         //õnnestumise teade
         setSnackbarMessage("Lisamine õnnestus!")
         showSnackbar()
@@ -86,28 +83,24 @@ const ClientForm = () => {
         let temp = [...clientData]
         temp.push(response.data)
         setClientData(temp)
-      }
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-      let temp = { ...errors }
-
-      if (err.response?.status === 499) {
-        temp.name = "See nimi on juba võetud."
-      }
-
-      if (err.response?.status === 498) {
-        temp.regcode = "See registrikood on juba võetud."
-      }
-
-      if (err.response?.status === 497) {
-        temp.vatno = "See KMKR nr on juba võetud."
-      }
-
-      setErrors({
-        ...temp,
       })
-    }
+      .catch((error) => {
+        const err = error.response.data.errors
+        console.log(err)
+        let temp = { ...errors }
+        if (err.find((item) => item.code === 499)) {
+          temp.name = "See nimi on juba võetud."
+        }
+        if (err.find((item) => item.code === 498)) {
+          temp.regcode = "See registrikood on juba võetud."
+        }
+        if (err.find((item) => item.code === 497)) {
+          temp.vatno = "See KMKR nr on juba võetud."
+        }
+        setErrors({
+          ...temp,
+        })
+      })
   }
 
   return (

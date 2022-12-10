@@ -17,14 +17,16 @@ const Settings = () => {
   console.log(userData)
 
   const initialValues = {
-    /*     name: 
-    surname:
+    name: userData.user.name,
+    surname: userData.user.surname,
+    email: userData.user.email,
     businessName:
-    regNumber:
-    address:
-    iban: */
-
-    ...userData.user,
+      userData.user.businessName === null ? "" : userData.user.businessName,
+    regNumber: userData.user.regNumber === null ? "" : userData.user.regNumber,
+    vat: userData.user.vat === null ? "" : userData.user.vat,
+    address: userData.user.address === null ? "" : userData.user.address,
+    iban: userData.user.iban === null ? "" : userData.user.iban,
+    //...userData.user,
   }
 
   const validate = (fieldValues = values) => {
@@ -75,6 +77,9 @@ const Settings = () => {
     true,
     validate
   )
+
+  console.log(initialValues)
+  console.log(values)
 
   const handleSubmit = (e) => {
     e.preventDefault()

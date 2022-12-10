@@ -49,40 +49,38 @@ function ServiceTable() {
   }
 
   const handleEditService = async (updatedService) => {
-    try {
-      const UPDATE_URL = SERVICE_URL + updatedService.newData._id
-      const response = await axios.put(UPDATE_URL, updatedService.newData)
-      //kasutajakonteksti lisamine
-      if (response.status === 200) {
+    const UPDATE_URL = SERVICE_URL + updatedService.newData._id
+    axios
+      .put(UPDATE_URL, updatedService.newData)
+      .then((response) => {
         let temp = [...serviceData]
         let index = temp.findIndex(
           (element) => element._id === updatedService.newData._id
         )
-        //temp[index] = updatedService.newData
         temp[index] = response.data
         setServiceData(temp)
-      }
-      //õnnestumise teade
-      setOpen(true)
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-    }
+      })
+      .catch((error) => {
+        let temp = {}
+        if (error.response.data.find((item) => item.code === 499)) {
+          temp.code = "See kood on juba võetud."
+        }
+        console.log(temp)
+      })
   }
 
   const handleDeleteService = async () => {
-    try {
-      const DELETE_URL = SERVICE_URL + deletableData._id
-      const response = await axios.delete(DELETE_URL)
-      if (response.status === 200) {
+    const DELETE_URL = SERVICE_URL + deletableData._id
+    axios
+      .delete(DELETE_URL)
+      .then((response) => {
         let temp = [...serviceData]
         temp = temp.filter((service) => service._id !== deletableData._id)
         setServiceData(temp)
-      }
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-    }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   const toast = useRef(null)
@@ -119,7 +117,6 @@ function ServiceTable() {
   }
 
   const deleteData = () => {
-    //let _products = serviceData.filter((val) => val._id !== deletableData._id)
     handleDeleteService()
     setDeleteDataDialog(false)
     setDeletableData(null)
@@ -292,10 +289,10 @@ function ServiceTable() {
       >
         <DialogTitle>{"Olete kindel, et soovite rea kustutada?"}</DialogTitle>
         <DialogActions>
-          <Button onClick={handleClose}>EI</Button>
           <Button onClick={deleteData} autoFocus>
             JAH
           </Button>
+          <Button onClick={handleClose}>EI</Button>
         </DialogActions>
       </Dialog>
     </div>

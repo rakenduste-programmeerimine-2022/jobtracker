@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
 import axios from "./api/axios"
 import Layout from "./layouts/Layout"
 import Clients from "./pages/clients/Clients"
@@ -15,16 +15,49 @@ import UserContext from "./contexts/UserContext"
 
 function App() {
   const [userData, setUserData] = useState(null)
+  const [loggedIn, setLoggedIn] = useState(false)
   const [serviceData, setServiceData] = useState("")
   const [clientData, setClientData] = useState("")
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
+  const tokenCheck = async () => {
+    if (loggedIn) {
+      const data = await fetch("http://localhost:8080/auth/tokencheck", {
+        credentials: "include",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const json = await data.json()
+      if (json.success === false) {
+        setUserData(null)
+        sessionStorage.removeItem("userId")
+        setLoggedIn(false)
+      }
+    }
+  }
+
   useMemo(() => {
-    if (!userData) setUserData(JSON.parse(sessionStorage.getItem("user")))
+    tokenCheck()
+  }, [userData, loggedIn, setLoggedIn, setUserData])
+
+  useMemo(() => {
+    if (userData === null && !sessionStorage.getItem("user")) {
+      setLoggedIn(false)
+      return
+    }
+    if (userData === null && sessionStorage.getItem("user")) {
+      let temp = JSON.parse(sessionStorage.getItem("user"))
+      setUserData(temp)
+      setLoggedIn(true)
+      console.log("Kasutaja taastamine sessioonmälust")
+    }
+    console.log(userData)
 
     const loadServiceData = async () => {
-      if (userData) {
+      if (loggedIn) {
         try {
           const response = await axios.get(SERVICE_URL, {
             params: {
@@ -38,7 +71,7 @@ function App() {
       }
     }
     const loadClientData = async () => {
-      if (userData) {
+      if (loggedIn) {
         try {
           const response = await axios.get(CLIENT_URL, {
             params: {
@@ -51,9 +84,10 @@ function App() {
         }
       }
     }
+
     loadServiceData()
     loadClientData()
-  }, [userData])
+  }, [userData, loggedIn])
 
   //console.log("Kasutaja: ", userData)
   //console.log("Teenused: ", serviceData)
@@ -63,12 +97,14 @@ function App() {
     () => ({
       userData,
       setUserData,
+      loggedIn,
+      setLoggedIn,
       serviceData,
       setServiceData,
       clientData,
       setClientData,
     }),
-    [userData, serviceData, clientData]
+    [userData, serviceData, clientData, loggedIn]
   )
 
   return (
@@ -86,8 +122,14 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/register"
+            element={loggedIn ? <Navigate replace to="/" /> : <Register />}
+          />
+          <Route
+            path="/login"
+            element={loggedIn ? <Navigate replace to="/" /> : <Login />}
+          />
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>
