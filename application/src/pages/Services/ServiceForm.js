@@ -77,14 +77,11 @@ const ServiceForm = () => {
   }
 
   const handleAddService = async (newService) => {
-    //newService.tax = parseInt(newService.tax)
-    //newService.price = parseInt(newService.price)
-    try {
-      let response = await axios.post(SERVICE_URL, newService)
-      if (response.status === 200) {
+    axios
+      .post(SERVICE_URL, newService)
+      .then((response) => {
         resetForm()
         console.log(response.data)
-
         //õnnestumise teade
         setSnackbarMessage("Lisamine õnnestus!")
         showSnackbar()
@@ -92,19 +89,16 @@ const ServiceForm = () => {
         let temp = [...serviceData]
         temp.push(response.data)
         setServiceData(temp)
-      }
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-      let temp = { ...errors }
-
-      if (err.response?.status === 499) {
-        temp.code = "See kood on juba võetud."
-      }
-      setErrors({
-        ...temp,
       })
-    }
+      .catch((error) => {
+        let temp = { ...errors }
+        if (error.response.data.find((item) => item.code === 499)) {
+          temp.code = "See kood on juba võetud."
+        }
+        setErrors({
+          ...temp,
+        })
+      })
   }
 
   return (

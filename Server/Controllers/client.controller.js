@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const ObjectId = require("mongodb").ObjectID
+const { body, validationResult } = require("express-validator")
 
 const clientSchema = new mongoose.Schema(
   {
@@ -18,19 +18,31 @@ const Item = mongoose.model("Client", clientSchema)
 exports.create = async (req, res) => {
   const { userId, name, regcode, vatno, address, term } = req.body
 
+  /*   body('name').not().isEmpty().trim().escape(),
+  body('regcode').isNumber(),
+  body('term').isEmail(), */
+
   const nameExists = await Item.findOne({ userId: userId, name: name })
   const regcodeExists = await Item.findOne({ userId: userId, regcode: regcode })
-  //const vatnoExists = await Item.findOne({ userId: userId, vatno: vatno })
 
+  let vatnoExists = null
+  if (vatno.length > 0)
+    vatnoExists = await Item.findOne({ userId: userId, vatno: vatno })
+
+  let errorMsg = []
   if (nameExists) {
-    res.status(499).send("Nimi on juba võetud")
-  } else if (regcodeExists) {
-    res.status(498).send("Reg on juba võetud")
-    /*
+    errorMsg.push({ code: 499, title: "Nimi on juba võetud" })
   }
-     if (vatnoExists) {
-    res.status(497).send("KMKR nr on juba võetud")
-  */
+  if (regcodeExists) {
+    errorMsg.push({ code: 498, title: "Reg on juba võetud" })
+  }
+  if (vatnoExists) {
+    errorMsg.push({ code: 497, title: "KMKR nr on juba võetud" })
+  }
+
+  if (errorMsg.length > 0) {
+    res.status(400).send(errorMsg)
+    console.log(errorMsg)
   } else {
     const item = await Item.create(
       { userId, name, regcode, vatno, address, term },
@@ -54,24 +66,46 @@ exports.read = async (req, res) => {
 }
 
 exports.update = async (req, res) => {
-  const { name, regcode, vatno, address, term } = req.body
+  const { userId, name, regcode, vatno, address, term } = req.body
   const { id } = req.params
   const filter = { _id: id }
   const update = { name, regcode, vatno, address, term }
 
-  const codeExists = await Item.findOne({ regcode })
-  let canProceed = true
+  const nameExists = await Item.findOne({
+    userId: userId,
+    name: name,
+    _id: { $ne: id },
+  })
+  const regcodeExists = await Item.findOne({
+    userId: userId,
+    regcode: regcode,
+    _id: { $ne: id },
+  })
 
-  if (codeExists !== null) {
-    console.log(codeExists)
-    if (codeExists._id.toString() !== id) {
-      canProceed = false
-    }
+  let vatnoExists = null
+  if (vatno.length > 0)
+    vatnoExists = await Item.findOne({
+      userId: userId,
+      vatno: vatno,
+      _id: { $ne: id },
+    })
+
+  console.log(nameExists)
+
+  let errorMsg = []
+  if (nameExists) {
+    errorMsg.push({ code: 499, title: "Nimi on juba võetud" })
+  }
+  if (regcodeExists) {
+    errorMsg.push({ code: 498, title: "Reg on juba võetud" })
+  }
+  if (vatnoExists) {
+    errorMsg.push({ code: 497, title: "KMKR nr on juba võetud" })
   }
 
-  if (!canProceed) {
-    res.status(499).send("Registrikood juba võetud")
-    console.log("499")
+  if (errorMsg.length > 0) {
+    res.status(400).send(errorMsg)
+    console.log(errorMsg)
   } else {
     Item.findOneAndUpdate(
       filter,

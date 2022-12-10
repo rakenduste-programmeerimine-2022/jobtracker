@@ -22,8 +22,15 @@ exports.create = async (req, res) => {
   const { userId, code, description, unit, price, tax } = req.body
 
   const codeExists = await Item.findOne({ userId: userId, code: code })
+
+  let errorMsg = []
   if (codeExists) {
-    res.status(499).send("Kood juba võetud")
+    errorMsg.push({ code: 499, title: "Kood on juba võetud" })
+  }
+
+  if (errorMsg.length > 0) {
+    res.status(400).send(errorMsg)
+    console.log(errorMsg)
   } else {
     const item = await Item.create(
       { userId, code, description, unit, price, tax },
@@ -48,23 +55,24 @@ exports.read = async (req, res) => {
 exports.update = async (req, res) => {
   const { userId, code, description, unit, price, tax } = req.body
   const { id } = req.params
-  console.log(id)
+  //console.log(id)
   const filter = { _id: id }
   const update = { userId, code, description, unit, price, tax }
 
-  const codeExists = await Item.findOne({ code })
-  let canProceed = true
+  const codeExists = await Item.findOne({
+    userId: userId,
+    code: code,
+    _id: { $ne: id },
+  })
 
-  if (codeExists !== null) {
-    console.log(codeExists)
-    if (codeExists._id.toString() !== id) {
-      canProceed = false
-    }
+  let errorMsg = []
+  if (codeExists) {
+    errorMsg.push({ code: 499, title: "Kood juba võetud" })
   }
 
-  if (!canProceed) {
-    res.status(499).send("Kood juba võetud")
-    console.log("499")
+  if (errorMsg.length > 0) {
+    res.status(400).send(errorMsg)
+    console.log(errorMsg)
   } else {
     Item.findOneAndReplace(
       filter,

@@ -48,39 +48,47 @@ function ClientTable() {
   }
 
   const handleEditClient = async (updatedClient) => {
-    try {
-      const UPDATE_URL = CLIENT_URL + updatedClient.newData._id
-      const response = await axios.put(UPDATE_URL, updatedClient.newData)
-      //kasutajakonteksti lisamine
-      if (response.status === 200) {
+    const UPDATE_URL = CLIENT_URL + updatedClient.newData._id
+    updatedClient.newData.term = parseInt(updatedClient.newData.term)
+    axios
+      .put(UPDATE_URL, updatedClient.newData)
+      .then((response) => {
         let temp = [...clientData]
         let index = temp.findIndex(
           (element) => element._id === updatedClient.newData._id
         )
         temp[index] = updatedClient.newData
         setClientData(temp)
-      }
-      //õnnestumise teade
-      setOpen(true)
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-    }
+        //õnnestumise teade
+        setOpen(true)
+      })
+      .catch((error) => {
+        let temp = {}
+        if (error.response.data.find((item) => item.code === 499)) {
+          temp.name = "See nimi on juba võetud."
+        }
+        if (error.response.data.find((item) => item.code === 498)) {
+          temp.regcode = "See registrikood on juba võetud."
+        }
+        if (error.response.data.find((item) => item.code === 497)) {
+          temp.vatno = "See KMKR nr on juba võetud."
+        }
+        console.log(temp)
+      })
   }
 
   const handleDeleteClient = async () => {
-    try {
-      const DELETE_URL = CLIENT_URL + deletableData._id
-      const response = await axios.delete(DELETE_URL)
-      if (response.status === 200) {
+    const DELETE_URL = CLIENT_URL + deletableData._id
+    axios
+      .delete(DELETE_URL)
+      .then((response) => {
         let temp = [...clientData]
         temp = temp.filter((client) => client._id !== deletableData._id)
         setClientData(temp)
-      }
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-    }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   const toast = useRef(null)
@@ -95,7 +103,6 @@ function ClientTable() {
   }
 
   const deleteData = () => {
-    //let _products = ClientData.filter((val) => val._id !== deletableData._id)
     handleDeleteClient()
     setDeleteDataDialog(false)
     setDeletableData(null)

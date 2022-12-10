@@ -1,5 +1,4 @@
 const db = require("../models")
-const ObjectId = require("mongodb").ObjectID
 const dotenv = require("dotenv")
 const User = db.user
 dotenv.config()
@@ -40,9 +39,6 @@ exports.signup = (req, res) => {
     )
     req.session.token = token
 
-    //console.log("1: ", req.session.token)
-    //console.log(JSON.stringify(req.headers))
-
     res.status(200).send({
       id: user._id,
       user: {
@@ -56,10 +52,7 @@ exports.signup = (req, res) => {
         iban: user.iban,
       },
     })
-    //console.log("2: ", req.session.token)
   })
-
-  //console.log("3: ", req.session.token)
 }
 
 exports.signin = (req, res) => {
@@ -95,7 +88,6 @@ exports.signin = (req, res) => {
     )
 
     req.session.token = token
-    //console.log(JSON.stringify(req.headers))
 
     res.status(200).send({
       id: user._id,
@@ -130,17 +122,15 @@ exports.tokencheck = async (req, res) => {
 exports.signout = async (req, res) => {
   try {
     req.session = null
-    return res.status(200).send({ success: true })
+    return res.send({ success: true })
   } catch (err) {
     this.next(err)
   }
 }
 
-//vaja teha
 exports.update = async (req, res) => {
   const { id } = req.params
-  //console.log(id)
-  const filter = { _id: ObjectId(id) }
+  const filter = { _id: id }
   let content = req.body
   if (content.password !== undefined)
     content.password = bcrypt.hashSync(content.password, 8)
@@ -155,7 +145,7 @@ exports.update = async (req, res) => {
       if (err) {
         res.send(err)
       } else {
-        res.status(200).send(result)
+        res.send(result)
       }
     }
   )
