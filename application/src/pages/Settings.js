@@ -11,9 +11,22 @@ const USER_URL = "/auth/user/"
 
 const Settings = () => {
   const { userData, setUserData } = useContext(UserContext)
+
   const id = userData.id
+
+  console.log(userData)
+
   const initialValues = {
-    ...userData.user,
+    name: userData.user.name,
+    surname: userData.user.surname,
+    email: userData.user.email,
+    businessName:
+      userData.user.businessName === null ? "" : userData.user.businessName,
+    regNumber: userData.user.regNumber === null ? "" : userData.user.regNumber,
+    vat: userData.user.vat === null ? "" : userData.user.vat,
+    address: userData.user.address === null ? "" : userData.user.address,
+    iban: userData.user.iban === null ? "" : userData.user.iban,
+    //...userData.user,
   }
 
   const validate = (fieldValues = values) => {
@@ -64,6 +77,9 @@ const Settings = () => {
     true,
     validate
   )
+
+  console.log(initialValues)
+  console.log(values)
 
   const handleSubmit = (e) => {
     e.preventDefault()

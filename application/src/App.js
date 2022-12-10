@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
 import axios from "./api/axios"
 import Layout from "./layouts/Layout"
 import Clients from "./pages/clients/Clients"
@@ -16,14 +16,49 @@ import UserContext from "./Contexts/UserContext"
 
 function App() {
   const [userData, setUserData] = useState(null)
-  const [serviceData, setServiceData] = useState(null)
-  const [clientData, setClientData] = useState(null)
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [serviceData, setServiceData] = useState("")
+  const [clientData, setClientData] = useState("")
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
+  const tokenCheck = async () => {
+    if (loggedIn) {
+      const data = await fetch("http://localhost:8080/auth/tokencheck", {
+        credentials: "include",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const json = await data.json()
+      if (json.success === false) {
+        setUserData(null)
+        sessionStorage.removeItem("userId")
+        setLoggedIn(false)
+      }
+    }
+  }
+
   useMemo(() => {
+    tokenCheck()
+  }, [userData, loggedIn, setLoggedIn, setUserData])
+
+  useMemo(() => {
+    if (userData === null && !sessionStorage.getItem("user")) {
+      setLoggedIn(false)
+      return
+    }
+    if (userData === null && sessionStorage.getItem("user")) {
+      let temp = JSON.parse(sessionStorage.getItem("user"))
+      setUserData(temp)
+      setLoggedIn(true)
+      console.log("Kasutaja taastamine sessioonmälust")
+    }
+    console.log(userData)
+
     const loadServiceData = async () => {
-      if (userData) {
+      if (loggedIn) {
         try {
           const response = await axios.get(SERVICE_URL, {
             params: {
@@ -36,8 +71,8 @@ function App() {
         }
       }
     }
-    /*   const loadClientData = async () => {
-      if (userData) {
+    const loadClientData = async () => {
+      if (loggedIn) {
         try {
           const response = await axios.get(CLIENT_URL, {
             params: {
@@ -49,18 +84,29 @@ function App() {
           console.log(error)
         }
       }
-    } */
+    }
+
     loadServiceData()
-    //loadClientData()
-  }, [userData])
+    loadClientData()
+  }, [userData, loggedIn])
+
+  //console.log("Kasutaja: ", userData)
+  //console.log("Teenused: ", serviceData)
+  //console.log("Kliendid: ", clientData)
 
   const providerValue = useMemo(
-    () => ({ userData, setUserData, serviceData, setServiceData }),
-    [userData, setUserData, serviceData, setServiceData]
+    () => ({
+      userData,
+      setUserData,
+      loggedIn,
+      setLoggedIn,
+      serviceData,
+      setServiceData,
+      clientData,
+      setClientData,
+    }),
+    [userData, serviceData, clientData, loggedIn]
   )
-
-  //console.log(userData)
-  //console.log(serviceData)
 
   return (
     <BrowserRouter>
@@ -74,13 +120,19 @@ function App() {
               <Route path="/clients" element={<Clients />} />
               <Route path="/services" element={<Services />} />
               {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
-              <Route path="/services/:id" element={<ServiceForm/>} />
+              <Route path="/services/:id" element={<ServiceForm />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/register"
+            element={loggedIn ? <Navigate replace to="/" /> : <Register />}
+          />
+          <Route
+            path="/login"
+            element={loggedIn ? <Navigate replace to="/" /> : <Login />}
+          />
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>

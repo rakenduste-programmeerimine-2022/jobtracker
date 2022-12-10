@@ -9,24 +9,19 @@ import {
 
 import { useState } from "react"
 
-//export function useForm(initialValues, validateOnChange = false, validate) {
-//export const useAlertDialog = () => {
 export function useAlertDialog() {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [deletable, setDeletable] = useState(null)
 
-  const handleDialogOpen = () => {
-    console.log("tere")
-    setDialogOpen(true)
-  }
-
-  const handleDialogClose = () => {
-    setDialogOpen(false)
+  const toggleDeleteDialog = () => {
+    setDialogOpen(!dialogOpen)
   }
 
   return {
     dialogOpen,
-    handleDialogOpen,
-    handleDialogClose,
+    toggleDeleteDialog,
+    deletable,
+    setDeletable,
   }
 }
 

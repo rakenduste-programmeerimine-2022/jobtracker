@@ -25,6 +25,8 @@ app.use(
     secret: process.env.SECRET_KEY,
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: true,
+    sameSite: "strict", //"lax", //"none",
+    secure: false, //true,
   })
 )
 

@@ -1,19 +1,26 @@
-import { useContext, useEffect, useState } from "react"
-//import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
-//import { useSnackbar, Snackbar } from "../../components/useSnackbar"
+import { useContext } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
+import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import axios from "../../api/axios"
 import { useNavigate, useParams } from "react-router-dom"
-import UserContext from "../../Contexts/UserContext"
+import UserContext from "../../contexts/UserContext"
 
 const CLIENT_URL = "/api/clients/"
 
 const ClientForm = () => {
-  //const { id } = useParams()
-  const { userData } = useContext(UserContext)
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
+
+  const { userData, clientData, setClientData } = useContext(UserContext)
+
   const userId = userData.id
 
   const initialValues = {
@@ -30,9 +37,9 @@ const ClientForm = () => {
     if ("name" in fieldValues)
       temp.name = fieldValues.name.length > 0 ? "" : "Palun täida see väli."
     if ("regcode" in fieldValues)
-      temp.regcode = /^[0-9]{8}$/.test(fieldValues.regcode)
-        ? ""
-        : "Palun sisesta kehtiv registrikood."
+      //temp.regcode = /^[0-9]{8}$/.test(fieldValues.regcode)
+      temp.regcode =
+        fieldValues.regcode.length > 0 ? "" : "Palun sisesta registrikood."
     if ("vatno" in fieldValues)
       temp.vatno = /^$|^([A-Z]{2})+([0-9]{8,9})$/.test(fieldValues.vatno)
         ? ""
@@ -59,47 +66,42 @@ const ClientForm = () => {
     e.preventDefault()
 
     if (validate()) {
-      console.log(values)
       handleAddClient(values)
-      resetForm()
+      console.log(values)
     }
   }
 
   const handleAddClient = async (newClient) => {
-    console.log(newClient)
     newClient.term = parseInt(newClient.term)
-    try {
-      console.log(newClient)
-      await axios.post(CLIENT_URL, newClient).then(function (response) {
-        console.log(response)
+    axios
+      .post(CLIENT_URL, newClient)
+      .then((response) => {
+        resetForm()
+        //õnnestumise teade
+        setSnackbarMessage("Lisamine õnnestus!")
+        showSnackbar()
+        //kasutajakonteksti lisamine
+        let temp = [...clientData]
+        temp.push(response.data)
+        setClientData(temp)
       })
-      resetForm()
-      //fetchData()
-      //õnnestumise teade
-      //setSnackbarMessage("Lisamine õnnestus!")
-      //showSnackbar()
-      //setDataToTransfer(newClient)
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-      let temp = { ...errors }
-
-      if (err.response.status === 499) {
-        temp.name = "See nimi on juba võetud."
-      }
-
-      if (err.response.status === 498) {
-        temp.regcode = "See registrikood on juba võetud."
-      }
-
-      if (err.response.status === 497) {
-        temp.vatno = "See KMKR nr on juba võetud."
-      }
-
-      setErrors({
-        ...temp,
+      .catch((error) => {
+        const err = error.response.data.errors
+        console.log(err)
+        let temp = { ...errors }
+        if (err.find((item) => item.code === 499)) {
+          temp.name = "See nimi on juba võetud."
+        }
+        if (err.find((item) => item.code === 498)) {
+          temp.regcode = "See registrikood on juba võetud."
+        }
+        if (err.find((item) => item.code === 497)) {
+          temp.vatno = "See KMKR nr on juba võetud."
+        }
+        setErrors({
+          ...temp,
+        })
       })
-    }
   }
 
   return (
@@ -113,6 +115,7 @@ const ClientForm = () => {
             value={values.name}
             error={errors.name}
             onChange={handleInputChange}
+            width="200px"
           />
           <InputField
             required
@@ -121,7 +124,7 @@ const ClientForm = () => {
             value={values.regcode}
             error={errors.regcode}
             onChange={handleInputChange}
-            width="100px"
+            width="200px"
           />
           <InputField
             label="KMKR nr"
@@ -129,7 +132,7 @@ const ClientForm = () => {
             value={values.vatno}
             error={errors.vatno}
             onChange={handleInputChange}
-            width="100px"
+            width="200px"
           />
           <InputField
             label="Aadress"
@@ -137,6 +140,7 @@ const ClientForm = () => {
             value={values.address}
             error={errors.address}
             onChange={handleInputChange}
+            width="200px"
           />
           <InputField
             required
@@ -150,6 +154,11 @@ const ClientForm = () => {
           <Button type="submit" text="Lisa klient" onClick={handleSubmit} />
         </Grid>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={hideSnackbar}
+        text={snackbarMessage}
+      />
     </Form>
   )
 }

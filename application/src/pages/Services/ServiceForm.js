@@ -1,8 +1,7 @@
 import { useContext } from "react"
 import { Grid } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
-//import { useAlertDialog, AlertDialog } from "../../components/useAlertDialog"
-//import { useSnackbar, Snackbar } from "../../components/useSnackbar"
+import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
@@ -11,12 +10,16 @@ import UserContext from "../../Contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
-//https://www.youtube.com/watch?v=-XKaSCU0ZLM
+const ServiceForm = () => {
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
 
-const ServiceForm = ({ fetchData }) => {
-  /*   const { id } = useParams() */
   const { userData, serviceData, setServiceData } = useContext(UserContext)
-  console.log(userData)
   const userId = userData.id
 
   const initialValues = {
@@ -73,33 +76,28 @@ const ServiceForm = ({ fetchData }) => {
   }
 
   const handleAddService = async (newService) => {
-    newService.tax = parseInt(newService.tax)
-    newService.price = parseInt(newService.price)
-    try {
-      let response = await axios.post(SERVICE_URL, newService)
-      if (response.status === 200) {
+    axios
+      .post(SERVICE_URL, newService)
+      .then((response) => {
         resetForm()
-
-        //õnnestumise teade SEE EI TÖÖTA
-        //setSnackbarMessage("Lisamine õnnestus!")
-        //showSnackbar()
+        console.log(response.data)
+        //õnnestumise teade
+        setSnackbarMessage("Lisamine õnnestus!")
+        showSnackbar()
         //kasutajakonteksti lisamine
         let temp = [...serviceData]
-        temp.push(newService)
+        temp.push(response.data)
         setServiceData(temp)
-      }
-    } catch (err) {
-      // Handle Error Here
-      console.error(err)
-      let temp = { ...errors }
-
-      if (err.response?.status === 499) {
-        temp.code = "See kood on juba võetud."
-      }
-      setErrors({
-        ...temp,
       })
-    }
+      .catch((error) => {
+        let temp = { ...errors }
+        if (error.response.data.find((item) => item.code === 499)) {
+          temp.code = "See kood on juba võetud."
+        }
+        setErrors({
+          ...temp,
+        })
+      })
   }
 
   return (
@@ -156,6 +154,11 @@ const ServiceForm = ({ fetchData }) => {
           <Button type="submit" text="Lisa" onClick={handleSubmit} />
         </Grid>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={hideSnackbar}
+        text={snackbarMessage}
+      />
     </Form>
   )
 }

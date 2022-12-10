@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState } from "react"
-import { NavLink, Outlet, useNavigate } from "react-router-dom"
+import { NavLink, Outlet } from "react-router-dom"
 import {
   AppBar,
   Box,
@@ -31,7 +31,7 @@ import UserContext from "../Contexts/UserContext"
 const drawerWidth = 260
 
 const Layout = ({ children, window }) => {
-  const { setUserData, setServiceData } = useContext(UserContext)
+  const { setUserData, setLoggedIn } = useContext(UserContext)
   const theme = useTheme()
   const mdOnly = useMediaQuery(theme.breakpoints.down("md"))
   const [open, setOpen] = useState(() => (mdOnly ? false : true))
@@ -39,8 +39,6 @@ const Layout = ({ children, window }) => {
   const handleDrawerToggle = () => {
     mdOnly && setOpen(!open)
   }
-
-  const navigate = useNavigate()
 
   async function logOutClick() {
     const data = await fetch("http://localhost:8080/auth/signout", {
@@ -51,11 +49,10 @@ const Layout = ({ children, window }) => {
       },
     })
     const response = await data.json()
-    console.log(response)
-    if (response.message === "You've been signed out!") {
+    if (response.success) {
+      sessionStorage.removeItem("user")
+      setLoggedIn(false)
       setUserData(null)
-      setServiceData(null)
-      navigate("/")
     }
   }
 
