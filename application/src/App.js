@@ -8,11 +8,11 @@ import Jobs from "./pages/jobs/Jobs"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
-import Services from "./pages/services/Services"
-import ServiceForm from "./pages/services/ServiceForm"
+import Services from "./pages/Services/Services"
+import ServiceForm from "./pages/Services/ServiceForm"
 import Settings from "./pages/Settings"
 import PrivateRoutes from "./utilities/PrivateRoutes"
-import UserContext from "./contexts/UserContext"
+import UserContext from "./Contexts/UserContext"
 
 function App() {
   const [userData, setUserData] = useState(null)
@@ -74,7 +74,7 @@ function App() {
               <Route path="/clients" element={<Clients />} />
               <Route path="/services" element={<Services />} />
               {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
-              <Route path="/services/:id" element={<ServiceForm />} />
+              <Route path="/services/:id" element={<ServiceForm/>} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Route>

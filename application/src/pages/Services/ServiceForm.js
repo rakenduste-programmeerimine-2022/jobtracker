@@ -7,7 +7,7 @@ import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
-import UserContext from "../../contexts/UserContext"
+import UserContext from "../../Contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
@@ -16,6 +16,7 @@ const SERVICE_URL = "/api/services"
 const ServiceForm = ({ fetchData }) => {
   /*   const { id } = useParams() */
   const { userData, serviceData, setServiceData } = useContext(UserContext)
+  console.log(userData)
   const userId = userData.id
 
   const initialValues = {
