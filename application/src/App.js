@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
 import axios from "./api/axios"
 import Layout from "./layouts/Layout"
@@ -21,6 +21,28 @@ function App() {
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
+  const tokenCheck = async () => {
+    if (loggedIn) {
+      const data = await fetch("http://localhost:8080/auth/tokencheck", {
+        credentials: "include",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const json = await data.json()
+      if (json.success === false) {
+        setUserData(null)
+        sessionStorage.removeItem("userId")
+        setLoggedIn(false)
+      }
+    }
+  }
+
+  useMemo(() => {
+    tokenCheck()
+  }, [userData, loggedIn, setLoggedIn, setUserData])
+
   useMemo(() => {
     if (userData === null && !sessionStorage.getItem("user")) {
       setLoggedIn(false)
@@ -30,7 +52,7 @@ function App() {
       let temp = JSON.parse(sessionStorage.getItem("user"))
       setUserData(temp)
       setLoggedIn(true)
-      console.log("sessionmälu on alles")
+      console.log("Kasutaja taastamine sessioonmälust")
     }
     console.log(userData)
 
@@ -65,7 +87,7 @@ function App() {
 
     loadServiceData()
     loadClientData()
-  }, [userData])
+  }, [userData, loggedIn])
 
   //console.log("Kasutaja: ", userData)
   //console.log("Teenused: ", serviceData)

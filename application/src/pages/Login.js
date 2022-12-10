@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useRef, useState } from "react"
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
-import { Link, Navigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import UserContext from "../contexts/UserContext"
 
 const Login = () => {
@@ -9,7 +9,7 @@ const Login = () => {
   const user = { email: "", password: "" }
   const [emailError, setEmailError] = useState("")
   const [passWordError, setPassWordError] = useState("")
-  const { loggedIn, setLoggedIn, setUserData } = useContext(UserContext)
+  const { setLoggedIn, setUserData } = useContext(UserContext)
 
   function handleSubmit() {
     let hasError = false

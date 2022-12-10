@@ -3,6 +3,7 @@ import { Alert, Snackbar as MuiSnackbar } from "@mui/material"
 
 export const useSnackbar = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success")
   const [snackbarMessage, setSnackbarMessage] = useState()
 
   const showSnackbar = () => {
@@ -21,19 +22,21 @@ export const useSnackbar = () => {
     setSnackbarMessage,
     showSnackbar,
     hideSnackbar,
+    snackbarSeverity,
+    setSnackbarSeverity,
   }
 }
 
 export const Snackbar = (props) => {
-  const { onClose, open, text } = props
+  const { onClose, severity = "success", open, text } = props
   return (
     <MuiSnackbar
       open={open}
-      autoHideDuration={6000}
+      autoHideDuration={3000}
       onClose={onClose}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
     >
-      <Alert onClose={onClose} severity="success" sx={{ width: "100%" }}>
+      <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
         {text}
       </Alert>
     </MuiSnackbar>

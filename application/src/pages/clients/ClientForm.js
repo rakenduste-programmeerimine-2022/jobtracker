@@ -85,14 +85,16 @@ const ClientForm = () => {
         setClientData(temp)
       })
       .catch((error) => {
+        const err = error.response.data.errors
+        console.log(err)
         let temp = { ...errors }
-        if (error.response.data.find((item) => item.code === 499)) {
+        if (err.find((item) => item.code === 499)) {
           temp.name = "See nimi on juba võetud."
         }
-        if (error.response.data.find((item) => item.code === 498)) {
+        if (err.find((item) => item.code === 498)) {
           temp.regcode = "See registrikood on juba võetud."
         }
-        if (error.response.data.find((item) => item.code === 497)) {
+        if (err.find((item) => item.code === 497)) {
           temp.vatno = "See KMKR nr on juba võetud."
         }
         setErrors({
