@@ -7,7 +7,7 @@ import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
 import { Button as Primebutton } from "primereact/button"
-import UserContext from "../../contexts/UserContext"
+import UserContext from "../../Contexts/UserContext"
 import { Snackbar, useSnackbar } from "../../components/useSnackbar"
 import { AlertDialog, useAlertDialog } from "../../components/useAlertDialog"
 

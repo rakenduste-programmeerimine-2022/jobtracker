@@ -1,32 +1,105 @@
-import { Grid } from "@mui/material"
+import { Box, Grid, TextField } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
+import { useContext, useState } from "react"
 import {
   InputField,
-  DatePicker,
   DropDownInput,
 } from "../../components/controls/Input"
+import axios from "../../api/axios"
+import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { Button } from "../../components/controls/Button"
 import { getClients, getServices } from "../../utilities/DataBaseRequests"
 import { getStatuses, getTaxRates } from "../../utilities/LocalRequests"
 import { useNavigate, useParams } from "react-router-dom"
+import UserContext from "../../Contexts/UserContext"
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+
+
+const CLIENT_URL = "/api/jobs/"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
-const initialValues = {
-  user: "",
-  client: "",
-  service: "",
-  description: "",
-  unit: "",
-  price: "",
-  tax: "",
-  total: "",
-  dueDate: "",
-  //status: "töös",
-  // date: Date(),
-}
+
 
 const JobForm = () => {
+
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
+
+  const { jobData, setJobData} = useContext(UserContext)
+  const { userData} = useContext(UserContext)
+  const { clientData, setClientData } = useContext(UserContext)
+  const{serviceData, setServiceData} = useContext(UserContext)
+  const{serviceUnit, setServiceUnit} = useState("")
+  const{servicePrice, setServicePrice} = useState("")
+  const{serviceTax, setServiceTax} = useState("")
+  const{jonTotal, setJobTotal} = useState("")
+  const[dateValue, setDateValue] = useState(new Date())
+  console.log(clientData)
+  console.log(serviceData)
+
+  const userId = userData.id
+
+  const initialValues = {
+    userId: userId,
+    clientId: "",
+    serviceId: "",
+    description: "",
+    unit: "",
+    price: "",
+    tax: "",
+    total: "",
+    status: "active",
+    dueDate: dateValue,
+  }
+
+  const clientDropdown = () =>{
+    const tempDataList = []
+
+    console.log(clientData)
+    if(clientData.length > 0){
+      for (let index = 0; index < clientData.length; index++) {
+        const element = {id: clientData[index]._id, title: clientData[index].name};
+        tempDataList.push(element)
+      }
+      return(tempDataList)
+    }
+    
+    return([
+          {
+            id: "",
+            title: "",
+          },
+        ])
+  }
+
+  const serviceDropdown = () =>{
+    const tempDataList = []
+
+    console.log(serviceData)
+    if(serviceData.length > 0){
+      for (let index = 0; index < serviceData.length; index++) {
+        const element = {id: serviceData[index]._id, title: serviceData[index].description};
+        tempDataList.push(element)
+      }
+      return(tempDataList)
+    }
+    
+    return([
+          {
+            id: "",
+            title: "",
+          },
+        ])
+  }
+
+
   const validate = (fieldValues = values) => {
     let temp = { ...errors }
     if ("code" in fieldValues)
@@ -57,7 +130,7 @@ const JobForm = () => {
       return Object.values(temp).every((x) => x === "")
   }
 
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(
+  const { values, errors, setErrors, handleInputChange, resetForm, handleServiceInputChange } = useForm(
     initialValues,
     true,
     validate
@@ -68,23 +141,51 @@ const JobForm = () => {
 
     if (validate()) {
       console.log(values)
-      window.alert("Esitatud")
+      handleAddJob(values)
       resetForm()
     }
   }
+
+
+  const handleAddJob = async (newJob) => {
+    newJob.price = parseInt(newJob.price)
+    newJob.total = parseInt(newJob.total)
+    newJob.tax = parseInt(newJob.tax)
+    newJob.dueDate = dateValue
+    console.log(newJob)
+    axios
+      .post(CLIENT_URL, newJob)
+      .then((response) => {
+        resetForm()
+        //õnnestumise teade
+        setSnackbarMessage("Lisamine õnnestus!")
+        showSnackbar()
+        //kasutajakonteksti lisamine
+        let temp = [...jobData]
+        console.log(response.data)
+        temp.push(response.data)
+        setJobData(temp)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+
 
   return (
     <Form onSubmit={handleSubmit}>
       <Grid container>
         <Grid item md={12}>
           <DropDownInput
+          sx={{ width: "auto", minWidth: "200px", mx: 1, my: 2 }}
             required
             label="Klient"
-            name="client"
-            value={values.client}
-            error={errors.client}
+            name="clientId"
+            value={values.clientId}
+            error={errors.clientId}
             onChange={handleInputChange}
-            options={getClients()}
+            options={clientDropdown()}
           />
           {/*           <DropDownInput
             required
@@ -95,13 +196,15 @@ const JobForm = () => {
             onChange={handleInputChange}
             options={getServices()}
           /> */}
-          <InputField
+          <DropDownInput
+          sx={{ width: "auto", minWidth: "200px", mx: 1, my: 2 }}
             required
-            label="Kirjeldus"
-            name="description"
-            value={values.description}
-            error={errors.description}
+            label="Teenus"
+            name="serviceId"
+            value={values.serviceId}
+            error={errors.serviceId}
             onChange={handleInputChange}
+            options={serviceDropdown()}
           />
           <InputField
             required
@@ -148,13 +251,28 @@ const JobForm = () => {
             onChange={handleInputChange}
             width="120px"
           />
+      
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
+            label="Tähtaeg"
+            inputFormat="DD.MM.YYYY"
+            value={dateValue}
+            onChange={(newValue) => {
+              console.log(new Date(newValue))
+              setDateValue(new Date(newValue));
+            }}
+            renderInput={(params) => <TextField size="small"  sx= {{mx: 1, my: 2, width: "150px"}} {...params} />}
+          />
+       </LocalizationProvider>
+
+
+          {/* <DatePicker
             label="Tähtaeg"
             name="date"
             value={values.dueDate}
             error={errors.dueDate}
             onChange={handleInputChange}
-          />
+          /> */}
           {/*           <DropDownInput
             required
             label="Olek"
@@ -164,7 +282,10 @@ const JobForm = () => {
             onChange={handleInputChange}
             options={getStatuses()}
           /> */}
-          <Button type="submit" text="Lisa töö" onClick={handleSubmit} />
+          
+        </Grid>
+        <Grid item md={12}>
+        <Button sx={{ mx: 1, my: 2 }} type="submit" text="Lisa töö" onClick={handleSubmit} />
         </Grid>
       </Grid>
     </Form>

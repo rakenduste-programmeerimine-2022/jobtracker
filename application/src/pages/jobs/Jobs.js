@@ -1,4 +1,5 @@
 import JobForm from "./JobForm"
+import JobTable from "../../components/Tables/JobTable"
 import { Box, Divider } from "@mui/material"
 
 /*
@@ -44,7 +45,7 @@ const Jobs = () => {
 
       <Divider />
 
-      <Box sx={{ m: 3, p: 3 }}>Siia tuleb tabel</Box>
+      <Box sx={{ m: 3, p: 3 }}><JobTable/></Box>
     </>
   )
 }
