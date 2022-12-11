@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
 import axios from "./api/axios"
 import Layout from "./layouts/Layout"
@@ -21,7 +21,7 @@ function App() {
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
-  const tokenCheck = async () => {
+  const tokenCheck = useCallback(async () => {
     if (loggedIn) {
       const data = await fetch("http://localhost:8080/auth/tokencheck", {
         credentials: "include",
@@ -37,13 +37,13 @@ function App() {
         setLoggedIn(false)
       }
     }
-  }
+  }, [loggedIn])
 
-  useMemo(() => {
+  useEffect(() => {
     tokenCheck()
-  }, [userData, loggedIn, setLoggedIn, setUserData])
+  }, [userData, loggedIn, setLoggedIn, setUserData, tokenCheck])
 
-  useMemo(() => {
+  useEffect(() => {
     if (userData === null && !sessionStorage.getItem("user")) {
       setLoggedIn(false)
       return

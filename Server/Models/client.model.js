@@ -1,7 +1,4 @@
 const { Schema, model } = require("mongoose")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-//const { body, validationResult } = require("express-validator")
 
 const clientSchema = new Schema(
   {
@@ -52,10 +49,8 @@ clientSchema.statics.addClient = async ({
       errorMsg.push({ code: 497, title: "KMKR nr on juba võetud" })
     }
 
-    //console.log(errorMsg)
     if (errorMsg.length > 0) {
       reject({ errors: errorMsg })
-      console.log(errorMsg)
       return
     }
 
@@ -68,7 +63,6 @@ clientSchema.statics.addClient = async ({
       term,
     })
 
-    console.log(newClient)
     //tokenit ei ole vaja panna? */
 
     newClient.save((err) => {
@@ -143,7 +137,6 @@ clientSchema.statics.update = async ({
       returnDocument: "after",
     }).then((updatedClient) => {
       resolve(updatedClient)
-      //console.log("klient ", updatedClient)
     })
   })
 }

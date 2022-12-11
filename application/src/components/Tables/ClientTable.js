@@ -2,7 +2,7 @@ import "primeicons/primeicons.css"
 import "primereact/resources/themes/lara-light-indigo/theme.css"
 import "primereact/resources/primereact.css"
 import { Button, Input } from "@mui/material"
-import React, { useContext, useRef } from "react"
+import React, { useContext } from "react"
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
@@ -154,7 +154,7 @@ function ClientTable() {
         open={dialogOpen}
         onClose={toggleDeleteDialog}
         title="Kustuta klient"
-        content="Oled kindel, et soovid teenuse kustutada"
+        content="Oled kindel, et soovid teenuse kustutada?"
         onDelete={handleDeleteClient}
       />
       {/*    <Toast ref={toast} /> */}

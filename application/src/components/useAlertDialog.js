@@ -6,8 +6,8 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material"
-
 import { useState } from "react"
+import PropTypes from "prop-types"
 
 export function useAlertDialog() {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -50,4 +50,12 @@ export const AlertDialog = (props) => {
       </Dialog>
     </>
   )
+}
+
+AlertDialog.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  title: PropTypes.string,
+  content: PropTypes.string,
+  onDelete: PropTypes.func,
 }
