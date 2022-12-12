@@ -48,7 +48,7 @@ exports.create = async (req, res) => {
 
 exports.read = async (req, res) => {
   const userId = req.query?.userId
-  const items = await Item.find({ userId })
+  const items = await Item.find()
   res.send(items)
 }
 

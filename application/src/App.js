@@ -19,8 +19,10 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false)
   const [serviceData, setServiceData] = useState("")
   const [clientData, setClientData] = useState("")
+  const [jobData, setJobData] = useState("")
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
+  const JOB_URL = "/api/jobs/"
 
   const tokenCheck = async () => {
     if (loggedIn) {
@@ -85,9 +87,24 @@ function App() {
         }
       }
     }
+    const loadJobData = async () => {
+      if (loggedIn) {
+        try {
+          const response = await axios.get(JOB_URL, {
+            params: {
+              userId: userData.id,
+            },
+          })
+          setJobData(response.data)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
 
     loadServiceData()
     loadClientData()
+    loadJobData()
   }, [userData, loggedIn])
 
   //console.log("Kasutaja: ", userData)
@@ -104,8 +121,10 @@ function App() {
       setServiceData,
       clientData,
       setClientData,
+      jobData,
+      setJobData
     }),
-    [userData, serviceData, clientData, loggedIn]
+    [userData, serviceData, clientData, loggedIn, jobData]
   )
 
   return (

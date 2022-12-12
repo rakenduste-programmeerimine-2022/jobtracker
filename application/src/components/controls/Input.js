@@ -78,7 +78,7 @@ export const DatePicker = (props) => {
         onChange={(event) =>
           onChange(convertToDefaultEventParams(name, event.$d))
         }
-        renderInput={(params: TextFieldProps) => {
+        renderInput={(params) => {
           return <TextField {...params} />
         }}
         views={["day"]}
