@@ -1,6 +1,6 @@
 import ClientForm from "./ClientForm"
 import { Box, Divider } from "@mui/material"
-import ClientTable from "../../components/Tables/ClientTable"
+import ClientTable from "../../components/tables/ClientTable"
 
 const Clients = () => {
   return (

@@ -6,7 +6,7 @@ import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
-import UserContext from "../../Contexts/UserContext"
+import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
@@ -68,7 +68,7 @@ const ServiceForm = () => {
     validate
   )
 
-  function handleSubmit(e){
+  function handleSubmit(e) {
     e.preventDefault()
 
     if (validate()) {
@@ -76,7 +76,7 @@ const ServiceForm = () => {
     }
   }
 
-  function handleAddService(newService){
+  function handleAddService(newService) {
     axios
       .post(SERVICE_URL, newService)
       .then((response) => {

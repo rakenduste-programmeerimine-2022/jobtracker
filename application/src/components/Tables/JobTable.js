@@ -20,7 +20,7 @@ import { Toast } from "primereact/toast"
 import { Button as Primebutton } from "primereact/button"
 import MuiAlert from "@mui/material/Alert"
 //import ServiceContext from "../../contexts/ServiceContext"
-import UserContext from "../../Contexts/UserContext"
+import UserContext from "../../contexts/UserContext"
 
 const JOBS_URL = "/api/jobs/"
 const Alert = React.forwardRef(function Alert(props, ref) {

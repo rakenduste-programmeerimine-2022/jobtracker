@@ -5,7 +5,7 @@ import { Form, useForm } from "../components/useForm"
 import { Snackbar, useSnackbar } from "../components/useSnackbar"
 import { InputField } from "../components/controls/Input"
 import { Button } from "../components/controls/Button"
-import UserContext from "../Contexts/UserContext"
+import UserContext from "../contexts/UserContext"
 
 const USER_URL = "/auth/user/"
 

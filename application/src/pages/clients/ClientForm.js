@@ -5,8 +5,8 @@ import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { InputField } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import axios from "../../api/axios"
-import { useNavigate, useParams } from "react-router-dom"
-import UserContext from "../../Contexts/UserContext"
+//import { useNavigate, useParams } from "react-router-dom"
+import UserContext from "../../contexts/UserContext"
 
 const CLIENT_URL = "/api/clients/"
 

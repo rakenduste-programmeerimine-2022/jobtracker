@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from "react"
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import { Link } from "react-router-dom"
-import UserContext from "../Contexts/UserContext"
+import UserContext from "../contexts/UserContext"
 
 const Login = () => {
   const emailRef = useRef()

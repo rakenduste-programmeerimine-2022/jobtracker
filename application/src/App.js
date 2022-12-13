@@ -8,11 +8,11 @@ import Jobs from "./pages/jobs/Jobs"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
-import Services from "./pages/Services/Services"
-import ServiceForm from "./pages/Services/ServiceForm"
+import Services from "./pages/services/Services"
+import ServiceForm from "./pages/services/ServiceForm"
 import Settings from "./pages/Settings"
 import PrivateRoutes from "./utilities/PrivateRoutes"
-import UserContext from "./Contexts/UserContext"
+import UserContext from "./contexts/UserContext"
 
 function App() {
   const [userData, setUserData] = useState(null)
@@ -57,7 +57,6 @@ function App() {
       setLoggedIn(true)
       console.log("Kasutaja taastamine sessioonmälust")
     }
-    console.log(userData)
 
     const loadServiceData = async () => {
       if (loggedIn) {
@@ -110,6 +109,7 @@ function App() {
   //console.log("Kasutaja: ", userData)
   //console.log("Teenused: ", serviceData)
   //console.log("Kliendid: ", clientData)
+  console.log("Tööd: ", jobData)
 
   const providerValue = useMemo(
     () => ({
@@ -122,7 +122,7 @@ function App() {
       clientData,
       setClientData,
       jobData,
-      setJobData
+      setJobData,
     }),
     [userData, serviceData, clientData, loggedIn, jobData]
   )
