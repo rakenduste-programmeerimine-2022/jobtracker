@@ -13,6 +13,21 @@ import Settings from "./pages/Settings"
 import PrivateRoutes from "./utilities/PrivateRoutes"
 import UserContext from "./contexts/UserContext"
 
+const userDataInitialValue = {
+  id: "",
+  loggedIn: false,
+  user: {
+    address: "",
+    businessName: "",
+    email: "",
+    iban: "",
+    name: "",
+    regNumber: "",
+    surname: "",
+    vat: "",
+  },
+}
+
 function App() {
   const [userData, setUserData] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false)
@@ -21,6 +36,7 @@ function App() {
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
 
+  console.log(userData)
   const tokenCheck = useCallback(async () => {
     if (loggedIn) {
       const data = await fetch("http://localhost:8080/auth/tokencheck", {
@@ -32,8 +48,8 @@ function App() {
       })
       const json = await data.json()
       if (json.success === false) {
+        sessionStorage.removeItem("user")
         setUserData(null)
-        sessionStorage.removeItem("userId")
         setLoggedIn(false)
       }
     }
@@ -49,12 +65,16 @@ function App() {
       return
     }
     if (userData === null && sessionStorage.getItem("user")) {
-      let temp = JSON.parse(sessionStorage.getItem("user"))
-      setUserData(temp)
-      setLoggedIn(true)
-      console.log("Kasutaja taastamine sessioonmälust")
+      tokenCheck()
+      if (sessionStorage.getItem("user")) {
+        let temp = JSON.parse(sessionStorage.getItem("user"))
+        setUserData(temp)
+        setLoggedIn(true)
+        console.log("Kasutaja taastamine sessioonmälust")
+      } else {
+        console.log("Kasutaja seanss on aegnud")
+      }
     }
-    console.log(userData)
 
     const loadServiceData = async () => {
       if (loggedIn) {
@@ -87,7 +107,9 @@ function App() {
 
     loadServiceData()
     loadClientData()
-  }, [userData, loggedIn])
+    //console.log("Kasutaja andmete alla laadmine")
+    //console.log(userData)
+  }, [userData, loggedIn, tokenCheck])
 
   //console.log("Kasutaja: ", userData)
   //console.log("Teenused: ", serviceData)
@@ -108,8 +130,8 @@ function App() {
   )
 
   return (
-    <BrowserRouter>
-      <UserContext.Provider value={providerValue}>
+    <UserContext.Provider value={providerValue}>
+      <BrowserRouter>
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Layout />}>
@@ -131,8 +153,8 @@ function App() {
             element={loggedIn ? <Navigate replace to="/" /> : <Login />}
           />
         </Routes>
-      </UserContext.Provider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </UserContext.Provider>
   )
 }
 

@@ -36,6 +36,7 @@ export const Snackbar = (props) => {
       autoHideDuration={3000}
       onClose={onClose}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      data-testid="teade"
     >
       <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
         {text}
