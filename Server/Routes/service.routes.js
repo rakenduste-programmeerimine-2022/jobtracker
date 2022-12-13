@@ -21,7 +21,7 @@ const serviceValidation = [
 ]
 
 router.post("/", serviceValidation, serviceController.create)
-router.get("/:id?", serviceController.read)
+router.get("/:id", serviceController.read)
 router.put("/:id", serviceValidation, serviceController.update)
 router.delete("/:id", serviceController.delete)
 

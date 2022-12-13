@@ -21,7 +21,7 @@ const clientValidation = [
 ]
 
 router.post("/", clientValidation, clientController.create)
-router.get("/:id?", clientController.read)
+router.get("/:id", clientController.read)
 router.put("/:id", clientValidation, clientController.update)
 router.delete("/:id", clientController.delete)
 

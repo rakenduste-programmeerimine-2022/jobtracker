@@ -22,7 +22,7 @@ const jobValidation = [
 ]
 
 router.post("/", jobValidation, jobController.create)
-router.get("/:id?", jobController.read)
+router.get("/:id", jobController.read)
 router.put("/:id", jobValidation, jobController.update)
 router.delete("/:id", jobController.delete)
 

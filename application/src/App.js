@@ -31,7 +31,7 @@ const userDataInitialValue = {
 
 function App() {
   const [userData, setUserData] = useState(null)
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(null)
   const [serviceData, setServiceData] = useState("")
   const [clientData, setClientData] = useState("")
   const [jobData, setJobData] = useState("")
@@ -39,7 +39,6 @@ function App() {
   const CLIENT_URL = "/api/clients/"
   const JOB_URL = "/api/jobs/"
 
-  console.log(userData)
   const tokenCheck = useCallback(async () => {
     if (loggedIn) {
       const data = await fetch("http://localhost:8080/auth/tokencheck", {
@@ -63,14 +62,15 @@ function App() {
   }, [userData, loggedIn, setLoggedIn, setUserData, tokenCheck])
 
   useEffect(() => {
-    if (userData === null && !sessionStorage.getItem("user")) {
+    let sessionData = sessionStorage.getItem("user")
+    if (loggedIn === null && !sessionData) {
       setLoggedIn(false)
-      return
     }
-    if (userData === null && sessionStorage.getItem("user")) {
+    if (loggedIn === null && sessionData) {
       tokenCheck()
-      if (sessionStorage.getItem("user")) {
-        let temp = JSON.parse(sessionStorage.getItem("user"))
+      sessionData = sessionStorage.getItem("user")
+      if (sessionData) {
+        let temp = JSON.parse(sessionData)
         setUserData(temp)
         setLoggedIn(true)
         console.log("Kasutaja taastamine sessioonmälust")
@@ -82,11 +82,8 @@ function App() {
     const loadServiceData = async () => {
       if (loggedIn) {
         try {
-          const response = await axios.get(SERVICE_URL, {
-            params: {
-              userId: userData.id,
-            },
-          })
+          const USER_SERVICE_URL = SERVICE_URL + userData.id
+          const response = await axios.get(USER_SERVICE_URL)
           setServiceData(response.data)
         } catch (error) {
           console.log(error)
@@ -96,11 +93,8 @@ function App() {
     const loadClientData = async () => {
       if (loggedIn) {
         try {
-          const response = await axios.get(CLIENT_URL, {
-            params: {
-              userId: userData.id,
-            },
-          })
+          const USER_CLIENT_URL = CLIENT_URL + userData.id
+          const response = await axios.get(USER_CLIENT_URL)
           setClientData(response.data)
         } catch (error) {
           console.log(error)
@@ -110,11 +104,8 @@ function App() {
     const loadJobData = async () => {
       if (loggedIn) {
         try {
-          const response = await axios.get(JOB_URL, {
-            params: {
-              userId: userData.id,
-            },
-          })
+          const USER_JOB_URL = JOB_URL + userData.id
+          const response = await axios.get(USER_JOB_URL)
           setJobData(response.data)
         } catch (error) {
           console.log(error)
@@ -125,14 +116,12 @@ function App() {
     loadServiceData()
     loadClientData()
     loadJobData()
-    //console.log("Kasutaja andmete alla laadmine")
-    //console.log(userData)
   }, [userData, loggedIn, tokenCheck])
 
   //console.log("Kasutaja: ", userData)
   //console.log("Teenused: ", serviceData)
   //console.log("Kliendid: ", clientData)
-  console.log("Tööd: ", jobData)
+  //console.log("Tööd: ", jobData)
 
   const providerValue = useMemo(
     () => ({
@@ -152,31 +141,33 @@ function App() {
 
   return (
     <UserContext.Provider value={providerValue}>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<PrivateRoutes />}>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Jobs />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/services" element={<Services />} />
-              {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
-              <Route path="/services/:id" element={<ServiceForm />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<NotFound />} />
+      {loggedIn !== null && (
+        <BrowserRouter>
+          <Routes>
+            <Route element={<PrivateRoutes />}>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Jobs />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/invoices" element={<Invoices />} />
+                <Route path="/clients" element={<Clients />} />
+                <Route path="/services" element={<Services />} />
+                {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
+                <Route path="/services/:id" element={<ServiceForm />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
             </Route>
-          </Route>
-          <Route
-            path="/register"
-            element={loggedIn ? <Navigate replace to="/" /> : <Register />}
-          />
-          <Route
-            path="/login"
-            element={loggedIn ? <Navigate replace to="/" /> : <Login />}
-          />
-        </Routes>
-      </BrowserRouter>
+            <Route
+              path="/register"
+              element={loggedIn ? <Navigate replace to="/" /> : <Register />}
+            />
+            <Route
+              path="/login"
+              element={loggedIn ? <Navigate replace to="/" /> : <Login />}
+            />
+          </Routes>
+        </BrowserRouter>
+      )}
     </UserContext.Provider>
   )
 }

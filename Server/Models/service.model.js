@@ -57,9 +57,11 @@ serviceSchema.statics.add = async ({
 }
 
 // Teenuse lugemine
-serviceSchema.statics.read = async () => {
+serviceSchema.statics.read = async ({ id }) => {
+  const filter = { userId: id }
+  console.log(id)
   return new Promise(async (resolve, reject) => {
-    const services = await Service.find()
+    const services = await Service.find(filter)
     if (!services) reject("teenuseid pole")
     resolve(services)
   })
@@ -110,7 +112,7 @@ serviceSchema.statics.delete = async ({ id }) => {
   return new Promise(async (resolve, reject) => {
     const filter = { _id: id }
     const deletedService = await Service.deleteOne(filter)
-    if (!deletedService) {
+    if (!deletedService.acknowledged) {
       reject("Ei õnnestunud kustutada")
       return
     }

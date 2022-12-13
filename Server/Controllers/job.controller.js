@@ -11,7 +11,7 @@ exports.create = async (req, res) => {
 }
 
 exports.read = async (req, res) => {
-  Job.read(req.body)
+  Job.read(req.params)
     .then((data) => res.send(data))
     .catch((err) => res.status(400).send(err))
 }

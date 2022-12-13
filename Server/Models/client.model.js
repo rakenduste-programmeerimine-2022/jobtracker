@@ -73,9 +73,10 @@ clientSchema.statics.addClient = async ({
 }
 
 // Kliendi lugemine
-clientSchema.statics.read = async () => {
+clientSchema.statics.read = async ({ id }) => {
+  const filter = { userId: id }
   return new Promise(async (resolve, reject) => {
-    const clients = await Client.find()
+    const clients = await Client.find(filter)
     if (!clients) reject("kliente pole")
     resolve(clients)
   })
@@ -146,7 +147,7 @@ clientSchema.statics.delete = async ({ id }) => {
   return new Promise(async (resolve, reject) => {
     const filter = { _id: id }
     const deletedClient = await Client.deleteOne(filter)
-    if (!deletedClient) {
+    if (!deletedClient.acknowledged) {
       reject("Ei õnnestunud kustutada")
       return
     }

@@ -20,7 +20,7 @@ const ServiceForm = () => {
   } = useSnackbar()
 
   const { userData, serviceData, setServiceData } = useContext(UserContext)
-  console.log(serviceData)
+  //console.log(serviceData)
   const userId = userData.id
 
   const initialValues = {
@@ -93,9 +93,10 @@ const ServiceForm = () => {
       })
       .catch((error) => {
         let temp = { ...errors }
-        if (error.response.data.find((item) => item.code === 499)) {
-          temp.code = "See kood on juba võetud."
-        }
+        console.log(error)
+        // if (error.response.data.find((item) => item.code === 499)) {
+        //   temp.code = "See kood on juba võetud."
+        // }
         setErrors({
           ...temp,
         })

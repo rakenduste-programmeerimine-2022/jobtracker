@@ -78,7 +78,7 @@ const JobForm = () => {
   const serviceDropdown = () => {
     const tempDataList = []
 
-    console.log(serviceData)
+    //console.log(serviceData)
     if (serviceData.length > 0) {
       for (let index = 0; index < serviceData.length; index++) {
         const element = {
@@ -148,9 +148,9 @@ const JobForm = () => {
   }
 
   const handleAddJob = async (newJob) => {
-    newJob.price = parseInt(newJob.price)
-    newJob.total = parseInt(newJob.total)
-    newJob.tax = parseInt(newJob.tax)
+    //newJob.price = parseInt(newJob.price)
+    //newJob.total = parseInt(newJob.total)
+    //newJob.tax = parseInt(newJob.tax)
     newJob.dueDate = dateValue
     console.log(newJob)
     axios
@@ -162,7 +162,6 @@ const JobForm = () => {
         showSnackbar()
         //kasutajakonteksti lisamine
         let temp = [...jobData]
-        console.log("api andmed: ", response.data)
         temp.push(response.data)
         setJobData(temp)
       })

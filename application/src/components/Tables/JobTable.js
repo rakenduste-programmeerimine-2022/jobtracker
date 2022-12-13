@@ -1,7 +1,7 @@
 import "primeicons/primeicons.css"
 import "primereact/resources/themes/lara-light-indigo/theme.css"
 import "primereact/resources/primereact.css"
-import '../../index.css';
+import "../../index.css"
 import {
   Button,
   Dialog,
@@ -11,7 +11,7 @@ import {
   Snackbar,
 } from "@mui/material"
 import React, { useContext, useRef, useState } from "react"
-import { Calendar } from 'primereact/calendar';
+import { Calendar } from "primereact/calendar"
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
@@ -27,19 +27,15 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
-
-
-
-
 function ServiceTable() {
   const { serviceData, setServiceData } = useContext(UserContext)
-  const {jobData, setJobData} = useContext(UserContext)
+  const { jobData, setJobData } = useContext(UserContext)
   const [open, setOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deletableData, setDeletableData] = useState()
   const [deleteDataDialog, setDeleteDataDialog] = useState(false)
 
-  console.log(jobData)
+  //console.log(jobData)
 
   const paginatorLeft = (
     <Button type="button" icon="pi pi-refresh" className="p-button-text" />
@@ -184,17 +180,15 @@ function ServiceTable() {
   const formatDate = (value) => {
     value = new Date(value)
     return value.toLocaleDateString("en-GB", {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
-}
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+  }
 
-const dateBodyTemplate = (rowData) => {
-    return formatDate(rowData.dueDate);
-}
-
-
+  const dateBodyTemplate = (rowData) => {
+    return formatDate(rowData.dueDate)
+  }
 
   const textEditor = (options) => {
     return (
@@ -256,8 +250,11 @@ const dateBodyTemplate = (rowData) => {
   }
 
   const dateEditor = (options) => {
-    return ( 
-        <Calendar value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />
+    return (
+      <Calendar
+        value={options.value}
+        onChange={(e) => options.editorCallback(e.target.value)}
+      />
     )
   }
 
@@ -277,10 +274,11 @@ const dateBodyTemplate = (rowData) => {
 
   const rowClass = (data) => {
     return {
-        'row-valmis': data.status === 'finished'
+      "row-valmis": data.status === "finished",
     }
-}
+  }
 
+  //console.log("tööde andemed", jobData)
 
   return (
     <div className="datatable-editing-demo">
@@ -348,7 +346,7 @@ const dateBodyTemplate = (rowData) => {
             style={{ width: "5%" }}
             resizeable={false}
           ></Column>
-            <Column
+          <Column
             field="price"
             header="Hind"
             sortable
@@ -366,7 +364,7 @@ const dateBodyTemplate = (rowData) => {
             style={{ width: "5%" }}
             resizeable={false}
           ></Column>
-           <Column
+          <Column
             field="total"
             header="Kokku"
             sortable
@@ -375,7 +373,7 @@ const dateBodyTemplate = (rowData) => {
             style={{ width: "10%" }}
             resizeable={false}
           ></Column>
-             <Column
+          <Column
             field="dueDate"
             header="Tähtaeg"
             sortable
@@ -385,7 +383,7 @@ const dateBodyTemplate = (rowData) => {
             style={{ width: "10%" }}
             resizeable={false}
           ></Column>
-            <Column
+          <Column
             field="status"
             header="Staatus"
             sortable
