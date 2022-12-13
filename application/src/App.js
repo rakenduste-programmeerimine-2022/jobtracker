@@ -8,18 +8,21 @@ import Jobs from "./pages/jobs/Jobs"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
 import Register from "./pages/Register"
-import Services from "./pages/services/Services"
+import Services from "./pages/Services/Services"
+import ServiceForm from "./pages/Services/ServiceForm"
 import Settings from "./pages/Settings"
 import PrivateRoutes from "./utilities/PrivateRoutes"
-import UserContext from "./contexts/UserContext"
+import UserContext from "./Contexts/UserContext"
 
 function App() {
   const [userData, setUserData] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [serviceData, setServiceData] = useState("")
   const [clientData, setClientData] = useState("")
+  const [jobData, setJobData] = useState("")
   const SERVICE_URL = "/api/services/"
   const CLIENT_URL = "/api/clients/"
+  const JOB_URL = "/api/jobs/"
 
   const tokenCheck = async () => {
     if (loggedIn) {
@@ -84,9 +87,24 @@ function App() {
         }
       }
     }
+    const loadJobData = async () => {
+      if (loggedIn) {
+        try {
+          const response = await axios.get(JOB_URL, {
+            params: {
+              userId: userData.id,
+            },
+          })
+          setJobData(response.data)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
 
     loadServiceData()
     loadClientData()
+    loadJobData()
   }, [userData, loggedIn])
 
   //console.log("Kasutaja: ", userData)
@@ -103,8 +121,10 @@ function App() {
       setServiceData,
       clientData,
       setClientData,
+      jobData,
+      setJobData
     }),
-    [userData, serviceData, clientData, loggedIn]
+    [userData, serviceData, clientData, loggedIn, jobData]
   )
 
   return (
@@ -118,6 +138,8 @@ function App() {
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/services" element={<Services />} />
+              {/* <Route path="/services/:id" exact element={<ServiceForm />} /> */}
+              <Route path="/services/:id" element={<ServiceForm />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Route>

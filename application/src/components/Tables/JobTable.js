@@ -1,6 +1,7 @@
 import "primeicons/primeicons.css"
 import "primereact/resources/themes/lara-light-indigo/theme.css"
 import "primereact/resources/primereact.css"
+import '../../index.css';
 import {
   Button,
   Dialog,
@@ -10,6 +11,7 @@ import {
   Snackbar,
 } from "@mui/material"
 import React, { useContext, useRef, useState } from "react"
+import { Calendar } from 'primereact/calendar';
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
@@ -20,17 +22,24 @@ import MuiAlert from "@mui/material/Alert"
 //import ServiceContext from "../../contexts/ServiceContext"
 import UserContext from "../../Contexts/UserContext"
 
-const SERVICE_URL = "/api/services/"
+const JOBS_URL = "/api/jobs/"
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
+
+
+
+
 function ServiceTable() {
   const { serviceData, setServiceData } = useContext(UserContext)
+  const {jobData, setJobData} = useContext(UserContext)
   const [open, setOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deletableData, setDeletableData] = useState()
   const [deleteDataDialog, setDeleteDataDialog] = useState(false)
+
+  console.log(jobData)
 
   const paginatorLeft = (
     <Button type="button" icon="pi pi-refresh" className="p-button-text" />
@@ -49,29 +58,34 @@ function ServiceTable() {
     setDeleteDataDialog(false)
   }
 
-  const handleEditService = async (updatedService) => {
-    const UPDATE_URL = SERVICE_URL + updatedService.newData._id
+  const handleEditJob = async (updatedJob) => {
+    console.log(updatedJob.newData)
+    const UPDATE_URL = JOBS_URL + updatedJob.newData._id
+    console.log(updatedJob.newData)
+
     axios
-      .put(UPDATE_URL, updatedService.newData)
+      .put(UPDATE_URL, updatedJob.newData)
       .then((response) => {
-        let temp = [...serviceData]
+        let temp = [...jobData]
         let index = temp.findIndex(
-          (element) => element._id === updatedService.newData._id
+          (element) => element._id === updatedJob.newData._id
         )
+        console.log(response.data)
         temp[index] = response.data
-        setServiceData(temp)
+        setJobData(temp)
+        console.log(jobData)
       })
       .catch((error) => {
         let temp = {}
         if (error.response.data.find((item) => item.code === 499)) {
           temp.code = "See kood on juba võetud."
         }
-        console.log(temp)
+        console.log(error)
       })
   }
 
   const handleDeleteService = async () => {
-    const DELETE_URL = SERVICE_URL + deletableData._id
+    const DELETE_URL = JOBS_URL + deletableData._id
     axios
       .delete(DELETE_URL)
       .then((response) => {
@@ -86,7 +100,7 @@ function ServiceTable() {
 
   const toast = useRef(null)
 
-  const getStatusLabel = (status) => {
+  const getTaxLabel = (status) => {
     switch (status) {
       case 0.0:
         return "0%"
@@ -102,19 +116,37 @@ function ServiceTable() {
     }
   }
 
-  const statuses = [
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "active":
+        return "Töös"
+
+      case "finished":
+        return "Valmis"
+
+      default:
+        return "NA"
+    }
+  }
+
+  const taxes = [
     { label: "0%", value: 0.0 },
     { label: "9%", value: 9.0 },
     { label: "20%", value: 20.0 },
   ]
 
+  const statuses = [
+    { label: "töös", value: "active" },
+    { label: "valmis", value: "finished" },
+  ]
+
   const onRowEditComplete = (e) => {
-    let temp = [...serviceData]
+    let temp = [...jobData]
     let { newData, index } = e
 
     temp[index] = newData
 
-    handleEditService(e)
+    handleEditJob(e)
   }
 
   const deleteData = () => {
@@ -142,8 +174,27 @@ function ServiceTable() {
   }
 
   const statusBodyTemplate = (rowData) => {
-    return getStatusLabel(rowData.tax)
+    return getStatusLabel(rowData.status)
   }
+
+  const taxBodyTemplate = (rowData) => {
+    return getTaxLabel(rowData.tax)
+  }
+
+  const formatDate = (value) => {
+    value = new Date(value)
+    return value.toLocaleDateString("en-GB", {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
+}
+
+const dateBodyTemplate = (rowData) => {
+    return formatDate(rowData.dueDate);
+}
+
+
 
   const textEditor = (options) => {
     return (
@@ -159,11 +210,30 @@ function ServiceTable() {
     return (
       <Dropdown
         value={options.value}
-        options={statuses}
+        options={taxes}
         optionLabel="label"
         optionValue="value"
         onChange={(e) => options.editorCallback(e.value)}
         //placeholder="Vali KM"
+        itemTemplate={(option) => {
+          return (
+            <span className={`product-badge status-${option.value}`}>
+              {option.label}
+            </span>
+          )
+        }}
+      />
+    )
+  }
+
+  const statusEditor = (options) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={statuses}
+        optionLabel="label"
+        optionValue="value"
+        onChange={(e) => options.editorCallback(e.value)}
         itemTemplate={(option) => {
           return (
             <span className={`product-badge status-${option.value}`}>
@@ -185,12 +255,32 @@ function ServiceTable() {
     )
   }
 
+  const dateEditor = (options) => {
+    return ( 
+        <Calendar value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />
+    )
+  }
+
   const priceBodyTemplate = (rowData) => {
     return new Intl.NumberFormat("en-EU", {
       style: "currency",
       currency: "EUR",
     }).format(rowData.price)
   }
+
+  const totalBodyTemplate = (rowData) => {
+    return new Intl.NumberFormat("en-EU", {
+      style: "currency",
+      currency: "EUR",
+    }).format(rowData.total)
+  }
+
+  const rowClass = (data) => {
+    return {
+        'row-valmis': data.status === 'finished'
+    }
+}
+
 
   return (
     <div className="datatable-editing-demo">
@@ -208,7 +298,7 @@ function ServiceTable() {
       <Toast ref={toast} />
       <div className="card p-fluid">
         <DataTable
-          value={serviceData}
+          value={jobData}
           paginator
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Näitan {first} kuni {last} rida {totalRecords}-st"
@@ -219,6 +309,7 @@ function ServiceTable() {
           sortField="code"
           sortOrder={1}
           resizableColumns
+          rowClassName={rowClass}
           editMode="row"
           size="small"
           dataKey="id"
@@ -228,19 +319,25 @@ function ServiceTable() {
           responsiveLayout="scroll"
         >
           <Column
-            field="code"
-            header="Kood"
+            field="clientId.name"
+            header="Klient"
             sortable
-            editor={(options) => textEditor(options)}
+            style={{ width: "15%" }}
+            resizeable={false}
+          ></Column>
+          <Column
+            field="serviceId.description"
+            sortable
+            header="Teenus"
             style={{ width: "15%" }}
             resizeable={false}
           ></Column>
           <Column
             field="description"
-            sortable
             header="Kirjeldus"
+            sortable
             editor={(options) => textEditor(options)}
-            style={{ width: "45%" }}
+            style={{ width: "25%" }}
             resizeable={false}
           ></Column>
           <Column
@@ -248,25 +345,53 @@ function ServiceTable() {
             header="Ühik"
             sortable
             editor={(options) => textEditor(options)}
-            style={{ width: "15%" }}
+            style={{ width: "5%" }}
             resizeable={false}
           ></Column>
-          <Column
+            <Column
             field="price"
             header="Hind"
             sortable
             body={priceBodyTemplate}
             editor={(options) => priceEditor(options)}
-            style={{ width: "15%" }}
+            style={{ width: "10%" }}
             resizeable={false}
           ></Column>
           <Column
             field="tax"
             header="KM"
             sortable
-            body={statusBodyTemplate}
+            body={taxBodyTemplate}
             editor={(options) => taxEditor(options)}
+            style={{ width: "5%" }}
+            resizeable={false}
+          ></Column>
+           <Column
+            field="total"
+            header="Kokku"
+            sortable
+            body={totalBodyTemplate}
+            editor={(options) => priceEditor(options)}
             style={{ width: "10%" }}
+            resizeable={false}
+          ></Column>
+             <Column
+            field="dueDate"
+            header="Tähtaeg"
+            sortable
+            body={dateBodyTemplate}
+            dataType="date"
+            editor={(options) => dateEditor(options)}
+            style={{ width: "10%" }}
+            resizeable={false}
+          ></Column>
+            <Column
+            field="status"
+            header="Staatus"
+            sortable
+            body={statusBodyTemplate}
+            editor={(options) => statusEditor(options)}
+            style={{ width: "5%" }}
             resizeable={false}
           ></Column>
           <Column

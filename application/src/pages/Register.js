@@ -1,7 +1,7 @@
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import { useContext, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import UserContext from "../contexts/UserContext"
+import UserContext from "../Contexts/UserContext"
 
 const Register = () => {
   const nameRef = useRef()
