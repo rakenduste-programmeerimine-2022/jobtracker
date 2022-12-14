@@ -26,7 +26,7 @@ import {
   Work as WorkIcon,
 } from "@mui/icons-material"
 import { v4 as uuid } from "uuid"
-import UserContext from "../Contexts/UserContext"
+import UserContext from "../contexts/UserContext"
 
 const drawerWidth = 260
 

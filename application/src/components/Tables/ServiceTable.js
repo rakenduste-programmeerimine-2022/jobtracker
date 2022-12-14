@@ -1,36 +1,21 @@
 import "primeicons/primeicons.css"
 import "primereact/resources/themes/lara-light-indigo/theme.css"
 import "primereact/resources/primereact.css"
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Input,
-  Snackbar,
-} from "@mui/material"
-import React, { useContext, useRef, useState } from "react"
+import { Button, Input } from "@mui/material"
+import React, { useContext } from "react"
 import axios from "../../api/axios"
 import { Column } from "primereact/column"
 import { DataTable } from "primereact/datatable"
 import { Dropdown } from "primereact/dropdown"
-import { Toast } from "primereact/toast"
 import { Button as Primebutton } from "primereact/button"
-import MuiAlert from "@mui/material/Alert"
-//import ServiceContext from "../../contexts/ServiceContext"
-import UserContext from "../../Contexts/UserContext"
+import UserContext from "../../contexts/UserContext"
+import { Snackbar, useSnackbar } from "../../components/useSnackbar"
+import { AlertDialog, useAlertDialog } from "../../components/useAlertDialog"
 
 const SERVICE_URL = "/api/services/"
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
-})
 
 function ServiceTable() {
   const { serviceData, setServiceData } = useContext(UserContext)
-  const [open, setOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const [deletableData, setDeletableData] = useState()
-  const [deleteDataDialog, setDeleteDataDialog] = useState(false)
 
   const paginatorLeft = (
     <Button type="button" icon="pi pi-refresh" className="p-button-text" />
@@ -39,15 +24,17 @@ function ServiceTable() {
     <Button type="button" icon="pi pi-cloud" className="p-button-text" />
   )
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return
-    }
-
-    setOpen(false)
-    setDeleteOpen(false)
-    setDeleteDataDialog(false)
-  }
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    setSnackbarMessage,
+    snackbarSeverity,
+    setSnackbarSeverity,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar()
+  const { deletable, setDeletable, dialogOpen, toggleDeleteDialog } =
+    useAlertDialog()
 
   const handleEditService = async (updatedService) => {
     const UPDATE_URL = SERVICE_URL + updatedService.newData._id
@@ -60,31 +47,50 @@ function ServiceTable() {
         )
         temp[index] = response.data
         setServiceData(temp)
+
+        //õnnestumise teade
+        setSnackbarSeverity("success")
+        setSnackbarMessage("Muutmine õnnestus!")
+        showSnackbar()
       })
       .catch((error) => {
-        let temp = {}
-        if (error.response.data.find((item) => item.code === 499)) {
-          temp.code = "See kood on juba võetud."
+        const err = error.response.data.errors
+        console.log(err)
+        let temp = ""
+        if (err.find((item) => item.code === 499)) {
+          temp += "See kood on juba võetud."
+        }
+        if (err.find((item) => item.msg === "Invalid value")) {
+          temp += "Vale väärtus."
         }
         console.log(temp)
+        setSnackbarSeverity("error")
+        setSnackbarMessage(temp)
+        showSnackbar()
       })
   }
 
   const handleDeleteService = async () => {
-    const DELETE_URL = SERVICE_URL + deletableData._id
+    const DELETE_URL = SERVICE_URL + deletable._id
+    console.log(DELETE_URL)
     axios
       .delete(DELETE_URL)
       .then((response) => {
         let temp = [...serviceData]
-        temp = temp.filter((service) => service._id !== deletableData._id)
+        temp = temp.filter((service) => service._id !== deletable._id)
         setServiceData(temp)
+        setSnackbarSeverity("success")
+        setSnackbarMessage("Kustutamine õnnestus!")
+        showSnackbar()
+        setDeletable(null)
+        toggleDeleteDialog()
       })
       .catch((error) => {
         console.log(error)
       })
   }
 
-  const toast = useRef(null)
+  //const toast = useRef(null)
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -102,6 +108,7 @@ function ServiceTable() {
     }
   }
 
+  //võtta failist
   const statuses = [
     { label: "0%", value: 0.0 },
     { label: "9%", value: 9.0 },
@@ -111,17 +118,13 @@ function ServiceTable() {
   const onRowEditComplete = (e) => {
     let temp = [...serviceData]
     let { newData, index } = e
-
     temp[index] = newData
-
     handleEditService(e)
   }
 
-  const deleteData = () => {
-    handleDeleteService()
-    setDeleteDataDialog(false)
-    setDeletableData(null)
-    setDeleteOpen(true)
+  const openDeleteDialog = (rowData) => {
+    setDeletable(rowData)
+    toggleDeleteDialog()
   }
 
   const deleteRow = (rowData) => {
@@ -130,15 +133,10 @@ function ServiceTable() {
         <Primebutton
           icon="pi pi-trash"
           className="p-button-rounded p-button-danger p-button-text"
-          onClick={() => confirmDeleteProduct(rowData)}
+          onClick={() => openDeleteDialog(rowData)}
         />
       </React.Fragment>
     )
-  }
-
-  const confirmDeleteProduct = (data) => {
-    setDeletableData(data)
-    setDeleteDataDialog(true)
   }
 
   const statusBodyTemplate = (rowData) => {
@@ -163,7 +161,6 @@ function ServiceTable() {
         optionLabel="label"
         optionValue="value"
         onChange={(e) => options.editorCallback(e.value)}
-        //placeholder="Vali KM"
         itemTemplate={(option) => {
           return (
             <span className={`product-badge status-${option.value}`}>
@@ -194,18 +191,20 @@ function ServiceTable() {
 
   return (
     <div className="datatable-editing-demo">
-      <Snackbar autoHideDuration={6000} open={open} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          Teenus on edukalt muudetud.
-        </Alert>
-      </Snackbar>
-      <Snackbar autoHideDuration={6000} open={deleteOpen} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          Rida edukalt kustutatud.
-        </Alert>
-      </Snackbar>
+      <Snackbar
+        severity={snackbarSeverity}
+        open={snackbarOpen}
+        onClose={hideSnackbar}
+        text={snackbarMessage}
+      />
+      <AlertDialog
+        open={dialogOpen}
+        onClose={toggleDeleteDialog}
+        title="Kustuta klient"
+        content="Oled kindel, et soovid teenuse kustutada?"
+        onDelete={handleDeleteService}
+      />
 
-      <Toast ref={toast} />
       <div className="card p-fluid">
         <DataTable
           value={serviceData}
@@ -281,21 +280,6 @@ function ServiceTable() {
           ></Column>
         </DataTable>
       </div>
-
-      <Dialog
-        open={deleteDataDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle>{"Olete kindel, et soovite rea kustutada?"}</DialogTitle>
-        <DialogActions>
-          <Button onClick={deleteData} autoFocus>
-            JAH
-          </Button>
-          <Button onClick={handleClose}>EI</Button>
-        </DialogActions>
-      </Dialog>
     </div>
   )
 }

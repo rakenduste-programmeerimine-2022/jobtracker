@@ -1,7 +1,4 @@
 const { Schema, model } = require("mongoose")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-//const { body, validationResult } = require("express-validator")
 
 const clientSchema = new Schema(
   {
@@ -52,10 +49,8 @@ clientSchema.statics.addClient = async ({
       errorMsg.push({ code: 497, title: "KMKR nr on juba võetud" })
     }
 
-    //console.log(errorMsg)
     if (errorMsg.length > 0) {
       reject({ errors: errorMsg })
-      console.log(errorMsg)
       return
     }
 
@@ -68,7 +63,6 @@ clientSchema.statics.addClient = async ({
       term,
     })
 
-    console.log(newClient)
     //tokenit ei ole vaja panna? */
 
     newClient.save((err) => {
@@ -79,9 +73,10 @@ clientSchema.statics.addClient = async ({
 }
 
 // Kliendi lugemine
-clientSchema.statics.read = async () => {
+clientSchema.statics.read = async ({ id }) => {
+  const filter = { userId: id }
   return new Promise(async (resolve, reject) => {
-    const clients = await Client.find()
+    const clients = await Client.find(filter)
     if (!clients) reject("kliente pole")
     resolve(clients)
   })
@@ -143,7 +138,6 @@ clientSchema.statics.update = async ({
       returnDocument: "after",
     }).then((updatedClient) => {
       resolve(updatedClient)
-      //console.log("klient ", updatedClient)
     })
   })
 }
@@ -153,7 +147,7 @@ clientSchema.statics.delete = async ({ id }) => {
   return new Promise(async (resolve, reject) => {
     const filter = { _id: id }
     const deletedClient = await Client.deleteOne(filter)
-    if (!deletedClient) {
+    if (!deletedClient.acknowledged) {
       reject("Ei õnnestunud kustutada")
       return
     }

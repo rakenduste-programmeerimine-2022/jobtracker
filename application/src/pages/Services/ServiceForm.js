@@ -6,7 +6,7 @@ import { InputField, DropDownInput } from "../../components/controls/Input"
 import { Button } from "../../components/controls/Button"
 import { getTaxRates } from "../../utilities/LocalRequests"
 import axios from "../../api/axios"
-import UserContext from "../../Contexts/UserContext"
+import UserContext from "../../contexts/UserContext"
 
 const SERVICE_URL = "/api/services"
 
@@ -20,7 +20,7 @@ const ServiceForm = () => {
   } = useSnackbar()
 
   const { userData, serviceData, setServiceData } = useContext(UserContext)
-  console.log(serviceData)
+  //console.log(serviceData)
   const userId = userData.id
 
   const initialValues = {
@@ -68,7 +68,7 @@ const ServiceForm = () => {
     validate
   )
 
-  function handleSubmit(e){
+  function handleSubmit(e) {
     e.preventDefault()
 
     if (validate()) {
@@ -76,7 +76,7 @@ const ServiceForm = () => {
     }
   }
 
-  function handleAddService(newService){
+  function handleAddService(newService) {
     axios
       .post(SERVICE_URL, newService)
       .then((response) => {
@@ -93,9 +93,10 @@ const ServiceForm = () => {
       })
       .catch((error) => {
         let temp = { ...errors }
-        if (error.response.data.find((item) => item.code === 499)) {
-          temp.code = "See kood on juba võetud."
-        }
+        console.log(error)
+        // if (error.response.data.find((item) => item.code === 499)) {
+        //   temp.code = "See kood on juba võetud."
+        // }
         setErrors({
           ...temp,
         })

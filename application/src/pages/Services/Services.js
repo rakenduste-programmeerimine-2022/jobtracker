@@ -1,6 +1,6 @@
 import ServiceFrom from "./ServiceForm"
 import { Box, Divider } from "@mui/material"
-import ServiceTable from "../../components/Tables/ServiceTable"
+import ServiceTable from "../../components/tables/ServiceTable"
 
 const Services = () => {
   return (

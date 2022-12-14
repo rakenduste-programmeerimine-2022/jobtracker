@@ -1,5 +1,5 @@
 import JobForm from "./JobForm"
-import JobTable from "../../components/Tables/JobTable"
+import JobTable from "../../components/tables/JobTable"
 import { Box, Divider } from "@mui/material"
 
 /*

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import PropTypes from "prop-types"
 
 export function useForm(initialValues, validateOnChange = false, validate) {
   const [values, setValues] = useState(initialValues)
@@ -29,11 +30,15 @@ export function useForm(initialValues, validateOnChange = false, validate) {
 }
 
 // siin saab kujunduse lisada
-export function Form(props) {
+export const Form = (props) => {
   const { children, ...other } = props
   return (
     <form autoComplete="off" {...other}>
       {children}
     </form>
   )
+}
+
+Form.propTypes = {
+  children: PropTypes.node,
 }

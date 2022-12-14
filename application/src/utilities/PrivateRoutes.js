@@ -1,7 +1,6 @@
-//import { JavascriptOutlined } from "@mui/icons-material"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import { Outlet, Navigate } from "react-router-dom"
-import UserContext from "../Contexts/UserContext"
+import UserContext from "../contexts/UserContext"
 
 function PrivateRoutes() {
   const { loggedIn } = useContext(UserContext)

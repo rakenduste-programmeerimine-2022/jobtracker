@@ -1,4 +1,5 @@
 import { useState } from "react"
+import PropTypes from "prop-types"
 import { Alert, Snackbar as MuiSnackbar } from "@mui/material"
 
 export const useSnackbar = () => {
@@ -35,10 +36,18 @@ export const Snackbar = (props) => {
       autoHideDuration={3000}
       onClose={onClose}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      data-testid="teade"
     >
       <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
         {text}
       </Alert>
     </MuiSnackbar>
   )
+}
+
+Snackbar.propTypes = {
+  onClose: PropTypes.func,
+  severity: PropTypes.string,
+  open: PropTypes.bool,
+  text: PropTypes.string,
 }

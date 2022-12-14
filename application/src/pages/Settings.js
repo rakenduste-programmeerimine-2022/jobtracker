@@ -5,7 +5,7 @@ import { Form, useForm } from "../components/useForm"
 import { Snackbar, useSnackbar } from "../components/useSnackbar"
 import { InputField } from "../components/controls/Input"
 import { Button } from "../components/controls/Button"
-import UserContext from "../Contexts/UserContext"
+import UserContext from "../contexts/UserContext"
 
 const USER_URL = "/auth/user/"
 
@@ -78,9 +78,6 @@ const Settings = () => {
     validate
   )
 
-  console.log(initialValues)
-  console.log(values)
-
   const handleSubmit = (e) => {
     e.preventDefault()
 
@@ -125,7 +122,7 @@ const Settings = () => {
   } = useSnackbar()
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} data-testid="settings">
       <Grid container spacing={2}>
         <Grid container item xs={12} sm={6} direction="column">
           <Typography variant="subtitle1">Kasutaja andmed</Typography>

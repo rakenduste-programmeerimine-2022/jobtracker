@@ -1,29 +1,22 @@
 import { Box, Grid, TextField } from "@mui/material"
 import { Form, useForm } from "../../components/useForm"
 import { useContext, useState } from "react"
-import {
-  InputField,
-  DropDownInput,
-} from "../../components/controls/Input"
+import { InputField, DropDownInput } from "../../components/controls/Input"
 import axios from "../../api/axios"
 import { useSnackbar, Snackbar } from "../../components/useSnackbar"
 import { Button } from "../../components/controls/Button"
 import { getClients, getServices } from "../../utilities/DataBaseRequests"
 import { getStatuses, getTaxRates } from "../../utilities/LocalRequests"
 import { useNavigate, useParams } from "react-router-dom"
-import UserContext from "../../Contexts/UserContext"
+import UserContext from "../../contexts/UserContext"
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-
 
 const CLIENT_URL = "/api/jobs/"
 
 //https://www.youtube.com/watch?v=-XKaSCU0ZLM
 
-
-
 const JobForm = () => {
-
   const {
     snackbarOpen,
     snackbarMessage,
@@ -32,17 +25,17 @@ const JobForm = () => {
     hideSnackbar,
   } = useSnackbar()
 
-  const { jobData, setJobData} = useContext(UserContext)
-  const { userData} = useContext(UserContext)
+  const { jobData, setJobData } = useContext(UserContext)
+  const { userData } = useContext(UserContext)
   const { clientData, setClientData } = useContext(UserContext)
-  const{serviceData, setServiceData} = useContext(UserContext)
-  const{serviceUnit, setServiceUnit} = useState("")
-  const{servicePrice, setServicePrice} = useState("")
-  const{serviceTax, setServiceTax} = useState("")
-  const{jonTotal, setJobTotal} = useState("")
-  const[dateValue, setDateValue] = useState(new Date())
-  console.log(clientData)
-  console.log(serviceData)
+  const { serviceData, setServiceData } = useContext(UserContext)
+  const { serviceUnit, setServiceUnit } = useState("")
+  const { servicePrice, setServicePrice } = useState("")
+  const { serviceTax, setServiceTax } = useState("")
+  const { jobTotal, setJobTotal } = useState("")
+  const [dateValue, setDateValue] = useState(new Date())
+  //console.log(clientData)
+  //console.log(serviceData)
 
   const userId = userData.id
 
@@ -59,46 +52,51 @@ const JobForm = () => {
     dueDate: dateValue,
   }
 
-  const clientDropdown = () =>{
+  const clientDropdown = () => {
     const tempDataList = []
 
-    console.log(clientData)
-    if(clientData.length > 0){
+    //console.log(clientData)
+    if (clientData.length > 0) {
       for (let index = 0; index < clientData.length; index++) {
-        const element = {id: clientData[index]._id, title: clientData[index].name};
+        const element = {
+          id: clientData[index]._id,
+          title: clientData[index].name,
+        }
         tempDataList.push(element)
       }
-      return(tempDataList)
+      return tempDataList
     }
-    
-    return([
-          {
-            id: "",
-            title: "",
-          },
-        ])
+
+    return [
+      {
+        id: "",
+        title: "",
+      },
+    ]
   }
 
-  const serviceDropdown = () =>{
+  const serviceDropdown = () => {
     const tempDataList = []
 
-    console.log(serviceData)
-    if(serviceData.length > 0){
+    //console.log(serviceData)
+    if (serviceData.length > 0) {
       for (let index = 0; index < serviceData.length; index++) {
-        const element = {id: serviceData[index]._id, title: serviceData[index].description};
+        const element = {
+          id: serviceData[index]._id,
+          title: serviceData[index].description,
+        }
         tempDataList.push(element)
       }
-      return(tempDataList)
+      return tempDataList
     }
-    
-    return([
-          {
-            id: "",
-            title: "",
-          },
-        ])
-  }
 
+    return [
+      {
+        id: "",
+        title: "",
+      },
+    ]
+  }
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors }
@@ -130,11 +128,14 @@ const JobForm = () => {
       return Object.values(temp).every((x) => x === "")
   }
 
-  const { values, errors, setErrors, handleInputChange, resetForm, handleServiceInputChange } = useForm(
-    initialValues,
-    true,
-    validate
-  )
+  const {
+    values,
+    errors,
+    setErrors,
+    handleInputChange,
+    resetForm,
+    handleServiceInputChange,
+  } = useForm(initialValues, true, validate)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -146,11 +147,10 @@ const JobForm = () => {
     }
   }
 
-
   const handleAddJob = async (newJob) => {
-    newJob.price = parseInt(newJob.price)
-    newJob.total = parseInt(newJob.total)
-    newJob.tax = parseInt(newJob.tax)
+    //newJob.price = parseInt(newJob.price)
+    //newJob.total = parseInt(newJob.total)
+    //newJob.tax = parseInt(newJob.tax)
     newJob.dueDate = dateValue
     console.log(newJob)
     axios
@@ -162,7 +162,6 @@ const JobForm = () => {
         showSnackbar()
         //kasutajakonteksti lisamine
         let temp = [...jobData]
-        console.log(response.data)
         temp.push(response.data)
         setJobData(temp)
       })
@@ -171,14 +170,12 @@ const JobForm = () => {
       })
   }
 
-
-
   return (
     <Form onSubmit={handleSubmit}>
       <Grid container>
         <Grid item md={12}>
           <DropDownInput
-          sx={{ width: "auto", minWidth: "200px", mx: 1, my: 2 }}
+            sx={{ width: "auto", minWidth: "200px", mx: 1, my: 2 }}
             required
             label="Klient"
             name="clientId"
@@ -197,7 +194,7 @@ const JobForm = () => {
             options={getServices()}
           /> */}
           <DropDownInput
-          sx={{ width: "auto", minWidth: "200px", mx: 1, my: 2 }}
+            sx={{ width: "auto", minWidth: "200px", mx: 1, my: 2 }}
             required
             label="Teenus"
             name="serviceId"
@@ -251,20 +248,25 @@ const JobForm = () => {
             onChange={handleInputChange}
             width="120px"
           />
-      
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Tähtaeg"
-            inputFormat="DD.MM.YYYY"
-            value={dateValue}
-            onChange={(newValue) => {
-              console.log(new Date(newValue))
-              setDateValue(new Date(newValue));
-            }}
-            renderInput={(params) => <TextField size="small"  sx= {{mx: 1, my: 2, width: "150px"}} {...params} />}
-          />
-       </LocalizationProvider>
 
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Tähtaeg"
+              inputFormat="DD.MM.YYYY"
+              value={dateValue}
+              onChange={(newValue) => {
+                console.log(new Date(newValue))
+                setDateValue(new Date(newValue))
+              }}
+              renderInput={(params) => (
+                <TextField
+                  size="small"
+                  sx={{ mx: 1, my: 2, width: "150px" }}
+                  {...params}
+                />
+              )}
+            />
+          </LocalizationProvider>
 
           {/* <DatePicker
             label="Tähtaeg"
@@ -282,10 +284,14 @@ const JobForm = () => {
             onChange={handleInputChange}
             options={getStatuses()}
           /> */}
-          
         </Grid>
         <Grid item md={12}>
-        <Button sx={{ mx: 1, my: 2 }} type="submit" text="Lisa töö" onClick={handleSubmit} />
+          <Button
+            sx={{ mx: 1, my: 2 }}
+            type="submit"
+            text="Lisa töö"
+            onClick={handleSubmit}
+          />
         </Grid>
       </Grid>
     </Form>
